@@ -153,6 +153,62 @@ const getCoinsLength = async () => {
 	return length || 0;
 };
 
+const getListOfSharks = async (page) => {
+	if (page === undefined) {
+		return [];
+	}
+
+	let sharks = [];
+	let sharksList = [];
+
+	if (page === null) {
+		sharks = await database.collection("sharks").orderBy("id", "asc").get();
+	} else {
+		const startIndex = (page - 1) * QUERY_LIMIT_ITEM + 1;
+		sharks = await database
+			.collection("sharks")
+			.orderBy("id", "asc")
+			.startAt(startIndex)
+			.limit(QUERY_LIMIT_ITEM)
+			.get();
+	}
+
+	sharks.forEach((doc) => {
+		sharksList.push(doc.data());
+	});
+
+	return sharksList;
+};
+
+const getSharksLength = async () => {
+	let length = 0;
+
+	await database
+		.collection("sharks")
+		.get()
+		.then((snap) => {
+			length = snap.size;
+		});
+
+	return length || 0;
+};
+
+const getListOfTags = async () => {
+	let sharks = [];
+	let sharksList = [];
+
+	sharks = await database
+		.collection("sharks")
+		.orderBy("id", "asc")
+		.get();
+
+	sharks.forEach((doc) => {
+		sharksList.push(doc.data());
+	});
+
+	return sharksList;
+};
+
 module.exports = {
 	getUserByUsername,
 	getUserByEmail,
@@ -163,4 +219,7 @@ module.exports = {
 	getPasswordByUsername,
 	getListOfCoins,
 	getCoinsLength,
+	getListOfSharks,
+	getSharksLength,
+	getListOfTags
 };
