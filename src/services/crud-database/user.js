@@ -155,26 +155,25 @@ const getCoinsLength = async () => {
 
 const getCoinDetails = async (coinId) => {
 	let coinInfo = {};
-
 	let fullInfo = {};
-	if ( !coinId ) {
+	
+	if (!coinId) {
 		fullInfo = await database
-		.collection("tokens")
-		.where("id", "==", 1)
-		.get();
+			.collection("tokens")
+			.where("id", "==", 1)
+			.get();
 	} else {
 		fullInfo = await database
 			.collection("tokens")
 			.where("id", "==", coinId)
 			.get();
-		
 	}
 	fullInfo.forEach((doc) => {
 		coinInfo = doc.data();
 	});
 
 	return coinInfo;
-}
+};
 const getListOfSharks = async (page) => {
 	if (page === undefined) {
 		return [];
