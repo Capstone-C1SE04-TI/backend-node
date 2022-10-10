@@ -5,15 +5,15 @@ const coinDetailsController = require("../controllers/CoinDetails");
 /**
  * @swagger
  * tags:
- *   name: Coin Details
+ *   name: Coin
  */
 
 /**
  * @swagger
  * /coin/details:
- *   get:
- *     description: Get detail coin
- *     tags: [Coin Details]
+*   get:
+ *     description: Get Coin details
+ *     tags: [Coin]
  *     parameters:
  *      - in: query
  *        name: coinId

@@ -8,9 +8,9 @@ const coinDetailsRouter = require("./coinDetails");
 function routing(app) {
 	app.use("/auth", authRouter);
 	app.use("/forgot-password", forgotPasswordRouter);
+	app.use("/coin", coinDetailsRouter);
 	app.use("/display", displayRouter);
 	app.use("/user", userRouter);
-	app.use("/coin", coinDetailsRouter);
 	app.use("/", sitesRouter);
 }
 

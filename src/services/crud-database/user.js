@@ -155,13 +155,10 @@ const getCoinsLength = async () => {
 
 const getCoinDetails = async (coinId) => {
 	let coinInfo = {};
-	let fullInfo = {};
+	let fullInfo = [];
 	
 	if (!coinId) {
-		fullInfo = await database
-			.collection("tokens")
-			.where("id", "==", 1)
-			.get();
+		coinInfo = null;
 	} else {
 		fullInfo = await database
 			.collection("tokens")

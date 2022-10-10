@@ -3,7 +3,7 @@ const { getCoinDetails } = require("../services/crud-database/user");
 
 function CoinDetailsController() {
 	this.getDetails = async (req, res, next) => {
-		let coinId;
+
 		if (!req.query.coinId) {
 			coinId = null;
 		} else {
@@ -19,9 +19,9 @@ function CoinDetailsController() {
 			.then((coinDetails) => {
 				if (coinDetails == null) {
 					return res.status(400).json({
-						message: "failed-coin-invalid",
+						message: "failed-id-invalid",
 						error: "coin-invalid",
-						datas: [],
+						datas: {},
 					});
 				} else {
 					return res.status(200).json({
@@ -35,7 +35,7 @@ function CoinDetailsController() {
 				return res.status(400).json({
 					message: "failed",
 					error: error,
-					datas: [],
+					datas: {},
 				});
 			});
 	};
