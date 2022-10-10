@@ -3,7 +3,6 @@ const { getCoinDetails } = require("../services/crud-database/user");
 
 function CoinDetailsController() {
 	this.getDetails = async (req, res, next) => {
-
 		if (!req.query.coinId) {
 			coinId = null;
 		} else {

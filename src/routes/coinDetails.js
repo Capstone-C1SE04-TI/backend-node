@@ -11,7 +11,7 @@ const coinDetailsController = require("../controllers/CoinDetails");
 /**
  * @swagger
  * /coin/details:
-*   get:
+ *   get:
  *     description: Get Coin details
  *     tags: [Coin]
  *     parameters:

@@ -156,8 +156,8 @@ const getCoinsLength = async () => {
 const getCoinDetails = async (coinId) => {
 	let coinInfo = {};
 	let fullInfo = [];
-	
-	if (!coinId) {
+	let coinsTotal = await getCoinsLength();
+	if (!coinId || coinId > coinsTotal) {
 		coinInfo = null;
 	} else {
 		fullInfo = await database
@@ -165,6 +165,7 @@ const getCoinDetails = async (coinId) => {
 			.where("id", "==", coinId)
 			.get();
 	}
+
 	fullInfo.forEach((doc) => {
 		coinInfo = doc.data();
 	});
