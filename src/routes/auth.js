@@ -98,6 +98,6 @@ router.post("/signin", authController.signin);
  *       400:
  *         description: Sign out failed
  */
-router.post("/signout", authController.signout);
+router.post("/signout", authController.signout);    
 
 module.exports = router;

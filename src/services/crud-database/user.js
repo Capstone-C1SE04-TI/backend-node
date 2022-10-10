@@ -153,6 +153,29 @@ const getCoinsLength = async () => {
 	return length || 0;
 };
 
+const getCoinDetails = async (coinId) => {
+	let coinInfo = {};
+
+	let fullInfo = {};
+	if (coinId === null) {
+		fullInfo = await database
+		.collection("tokens")
+		.where("ethId", "==", "1")
+		.get();
+	} else {
+		fullInfo = await database
+			.collection("tokens")
+			.where("ethId", "==", coinId)
+			.get();
+		
+	}
+	fullInfo.forEach((doc) => {
+		coinInfo = doc.data();
+	});
+
+	return coinInfo;
+};
+
 module.exports = {
 	getUserByUsername,
 	getUserByEmail,
@@ -163,4 +186,5 @@ module.exports = {
 	getPasswordByUsername,
 	getListOfCoins,
 	getCoinsLength,
+	getCoinDetails
 };
