@@ -194,19 +194,16 @@ const getSharksLength = async () => {
 };
 
 const getListOfTags = async () => {
-	let sharks = [];
-	let sharksList = [];
+	let tags = [];
+	let tagsList = [];
 
-	sharks = await database
-		.collection("sharks")
-		.orderBy("id", "asc")
-		.get();
+	tags = await database.collection("tags").orderBy("id", "asc").get();
 
-	sharks.forEach((doc) => {
-		sharksList.push(doc.data());
+	tags.forEach((doc) => {
+		tagsList.push(doc.data());
 	});
 
-	return sharksList;
+	return tagsList;
 };
 
 module.exports = {
@@ -221,5 +218,5 @@ module.exports = {
 	getCoinsLength,
 	getListOfSharks,
 	getSharksLength,
-	getListOfTags
+	getListOfTags,
 };
