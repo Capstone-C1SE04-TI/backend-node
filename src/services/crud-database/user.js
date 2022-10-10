@@ -157,15 +157,15 @@ const getCoinDetails = async (coinId) => {
 	let coinInfo = {};
 
 	let fullInfo = {};
-	if (coinId === null) {
+	if ( !coinId ) {
 		fullInfo = await database
 		.collection("tokens")
-		.where("ethId", "==", "1")
+		.where("id", "==", 1)
 		.get();
 	} else {
 		fullInfo = await database
 			.collection("tokens")
-			.where("ethId", "==", coinId)
+			.where("id", "==", coinId)
 			.get();
 		
 	}
