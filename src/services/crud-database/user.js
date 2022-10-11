@@ -153,6 +153,27 @@ const getCoinsLength = async () => {
 	return length || 0;
 };
 
+const getCoinDetails = async (coinId) => {
+	let coinInfo = {};
+	let fullInfo = [];
+
+	if (!coinId) {
+		coinInfo = null;
+	} else {
+		fullInfo = await database
+			.collection("tokens")
+			.where("id", "==", coinId)
+			.get();
+	}
+
+	fullInfo.forEach((doc) => {
+		coinInfo = doc.data();
+	});
+	// check if object is empty
+	if(Object.entries(coinInfo).length === 0) return null;
+
+	return coinInfo;
+};
 const getListOfSharks = async (page) => {
 	if (page === undefined) {
 		return [];
@@ -216,6 +237,7 @@ module.exports = {
 	getPasswordByUsername,
 	getListOfCoins,
 	getCoinsLength,
+	getCoinDetails,
 	getListOfSharks,
 	getSharksLength,
 	getListOfTags,
