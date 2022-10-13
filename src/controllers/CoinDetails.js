@@ -16,10 +16,11 @@ function CoinDetailsController() {
 
 		await getCoinDetails(coinId)
 			.then((coinDetails) => {
-				if (coinDetails == null) {
+				console.log(coinDetails);
+				if (Object.entries(coinDetails).length === 0) {
 					return res.status(400).json({
 						message: "failed-id-invalid",
-						error: "coin-invalid",
+						error: "coinId-invalid",
 						datas: {},
 					});
 				} else {

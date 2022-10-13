@@ -158,19 +158,19 @@ const getCoinDetails = async (coinId) => {
 	let fullInfo = [];
 
 	if (!coinId) {
-		coinInfo = null;
+		return {};
 	} else {
 		fullInfo = await database
 			.collection("tokens")
 			.where("id", "==", coinId)
 			.get();
-	}
 
-	fullInfo.forEach((doc) => {
-		coinInfo = doc.data();
-	});
+		fullInfo.forEach((doc) => {
+			coinInfo = doc.data();
+		});
+	}
 	// check if object is empty
-	if(Object.entries(coinInfo).length === 0) return null;
+	if (Object.entries(coinInfo).length === 0) return {};
 
 	return coinInfo;
 };
