@@ -16,7 +16,7 @@ const coinDetailsController = require("../controllers/CoinDetails");
  *     tags: [Coin]
  *     parameters:
  *      - in: query
- *        name: coinId
+ *        name: coinSymbol
  *        schema:
  *          type: string
  *     responses:
