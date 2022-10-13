@@ -17,7 +17,7 @@ function CoinDetailsController() {
 			.then((coinDetails) => {
 				if (Object.entries(coinDetails).length === 0) {
 					return res.status(400).json({
-						message: "failed-id-invalid",
+						message: "failed-symbol-invalid",
 						error: "symbol-invalid",
 						datas: {},
 					});
