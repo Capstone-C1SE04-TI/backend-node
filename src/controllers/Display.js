@@ -6,6 +6,8 @@ const {
 	getListOfSharks,
 	getSharksLength,
 	getListOfTags,
+	getListTrendingTokens,
+	getListTrendingCoins,
 } = require("../services/crud-database/user");
 
 function DisplayController() {
@@ -125,6 +127,64 @@ function DisplayController() {
 						error: null,
 						datasLength: tagsList.length,
 						datas: tagsList,
+					});
+				}
+			})
+			.catch((error) => {
+				return res.status(400).json({
+					message: "failed",
+					error: error,
+					datasLength: 0,
+					datas: [],
+				});
+			});
+	};
+
+	this.getTrendingTokens = async (req, res, next) => {
+		await getListTrendingTokens()
+			.then((trendingTokens) => {
+				if (trendingTokens.length == 0) {
+					return res.status(400).json({
+						message: "failed-get-trendingTokens",
+						error: "trendingTokens-error",
+						datasLength: 0,
+						datas: [],
+					});
+				} else {
+					return res.status(200).json({
+						message: "successfully",
+						error: null,
+						datasLength: trendingTokens.length,
+						datas: trendingTokens,
+					});
+				}
+			})
+			.catch((error) => {
+				return res.status(400).json({
+					message: "failed",
+					error: error,
+					datasLength: 0,
+					datas: [],
+				});
+			});
+	};
+
+	this.getTrendingCoins = async (req, res, next) => {
+		await getListTrendingCoins()
+			.then((trendingTokens) => {
+				if (trendingTokens.length == 0) {
+					return res.status(400).json({
+						message: "failed-get-trendingCoins",
+						error: "trendingCoins-invalid",
+						datasLength: 0,
+						datas: [],
+					});
+				} else {
+					return res.status(200).json({
+						message: "successfully",
+						error: null,
+						datasLength: trendingTokens.length,
+						datas: trendingTokens,
 					});
 				}
 			})
