@@ -91,7 +91,6 @@ const checkExistedEmail = async (email) => {
 	users.forEach((doc) => {
 		if (doc.get("email") === email) {
 			isExistedEmail = true;
-			// return;
 		}
 	});
 
@@ -113,7 +112,7 @@ const getPasswordByUsername = async (username) => {
 	return hashPassword;
 };
 
-const getListOfCoins = async (page) => {
+const getListOfCoinsAndTokens = async (page) => {
 	if (page === undefined) {
 		return [];
 	}
@@ -144,7 +143,10 @@ const getListOfCoins = async (page) => {
 			usd: data.usd,
 			marketCap: data.marketCap,
 			circulatingSupply: data.circulatingSupply,
-			pricesLast1Day: Object.entries(data.prices.day),
+			pricesLast1Day:
+				data.id >= 1 && data.id <= 10
+					? Object.entries(data.prices.day)
+					: null,
 		};
 
 		coinsList.push(coin);
@@ -153,7 +155,7 @@ const getListOfCoins = async (page) => {
 	return coinsList;
 };
 
-const getCoinsLength = async () => {
+const getCoinsAndTokensLength = async () => {
 	let length = 0;
 
 	await database
@@ -166,7 +168,101 @@ const getCoinsLength = async () => {
 	return length || 0;
 };
 
-const getCoinDetails = async (coinSymbol) => {
+const getListOfCoins = async (page) => {
+	if (page === undefined) {
+		return [];
+	}
+
+	let coins = [];
+	let coinsList = [];
+
+	if (page === null) {
+		coins = await database
+			.collection("tokens")
+			.where("type", "==", "coin")
+			.orderBy("id", "asc")
+			.get();
+	} else {
+		const startIndex = (page - 1) * QUERY_LIMIT_ITEM + 1;
+		coins = await database
+			.collection("tokens")
+			.where("type", "==", "coin")
+			.orderBy("id", "asc")
+			.startAt(startIndex)
+			.limit(QUERY_LIMIT_ITEM)
+			.get();
+	}
+
+	coins.forEach((doc) => {
+		const data = doc.data();
+		coinsList.push(data);
+	});
+
+	return coinsList;
+};
+
+const getCoinsLength = async () => {
+	let length = 0;
+
+	await database
+		.collection("tokens")
+		.where("type", "==", "coin")
+		.get()
+		.then((snap) => {
+			length = snap.size;
+		});
+
+	return length || 0;
+};
+
+const getListOfTokens = async (page) => {
+	if (page === undefined) {
+		return [];
+	}
+
+	let tokens = [];
+	let tokensList = [];
+
+	if (page === null) {
+		tokens = await database
+			.collection("tokens")
+			.where("type", "==", "token")
+			.orderBy("id", "asc")
+			.get();
+	} else {
+		const startIndex = (page - 1) * QUERY_LIMIT_ITEM + 1;
+		tokens = await database
+			.collection("tokens")
+			.where("type", "==", "token")
+			.orderBy("id", "asc")
+			.startAt(startIndex)
+			.limit(QUERY_LIMIT_ITEM)
+			.get();
+	}
+
+	tokens.forEach((doc) => {
+		const data = doc.data();
+		tokensList.push(data);
+	});
+
+	return tokensList;
+};
+
+const getTokensLength = async () => {
+	let length = 0;
+
+	await database
+		.collection("tokens")
+		.where("type", "==", "token")
+		.get()
+		.then((snap) => {
+			length = snap.size;
+		});
+
+	return length || 0;
+};
+
+const getCoinOrTokenDetails = async (coinSymbol) => {
 	let coinInfo = {};
 	let fullInfo = [];
 
@@ -182,6 +278,7 @@ const getCoinDetails = async (coinSymbol) => {
 			coinInfo = doc.data();
 		});
 	}
+
 	// check if object is empty
 	if (Object.entries(coinInfo).length === 0) return {};
 
@@ -309,9 +406,13 @@ module.exports = {
 	checkExistedUsername,
 	checkExistedEmail,
 	getPasswordByUsername,
+	getListOfCoinsAndTokens,
+	getCoinsAndTokensLength,
 	getListOfCoins,
 	getCoinsLength,
-	getCoinDetails,
+	getListOfTokens,
+	getTokensLength,
+	getCoinOrTokenDetails,
 	getListOfSharks,
 	getSharksLength,
 	getListOfTags,
