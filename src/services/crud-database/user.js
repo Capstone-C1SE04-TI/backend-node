@@ -134,7 +134,20 @@ const getListOfCoins = async (page) => {
 	}
 
 	coins.forEach((doc) => {
-		coinsList.push(doc.data());
+		const data = doc.data();
+
+		const coin = {
+			id: data.id,
+			name: data.name,
+			symbol: data.symbol,
+			iconURL: data.iconURL,
+			usd: data.usd,
+			marketCap: data.marketCap,
+			circulatingSupply: data.circulatingSupply,
+			pricesLast1Day: Object.entries(data.prices.day),
+		};
+
+		coinsList.push(coin);
 	});
 
 	return coinsList;
