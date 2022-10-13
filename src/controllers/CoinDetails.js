@@ -3,24 +3,22 @@ const { getCoinDetails } = require("../services/crud-database/user");
 
 function CoinDetailsController() {
 	this.getDetails = async (req, res, next) => {
-		if (!req.query.coinId) {
-			coinId = null;
+		if (!req.query.symbol) {
+			symbol = null;
 		} else {
-			const idInt = Math.floor(_.toNumber(req.query.coinId));
-			if (_.isNaN(idInt) || idInt <= 0) {
-				coinId = undefined;
+			const symbolCheck = _.toString(req.query.symbol).toUpperCase();
+			if (_.isNaN(symbolCheck)) {
+				symbol = undefined;
 			} else {
-				coinId = idInt;
+				symbol = symbolCheck;
 			}
 		}
-
-		await getCoinDetails(coinId)
+		await getCoinDetails(symbol)
 			.then((coinDetails) => {
-				console.log(coinDetails);
 				if (Object.entries(coinDetails).length === 0) {
 					return res.status(400).json({
-						message: "failed-id-invalid",
-						error: "coinId-invalid",
+						message: "failed-symbol-invalid",
+						error: "symbol-invalid",
 						datas: {},
 					});
 				} else {
