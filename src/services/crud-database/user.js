@@ -174,6 +174,7 @@ const getCoinDetails = async (coinSymbol) => {
 
 	return coinInfo;
 };
+
 const getListOfSharks = async (page) => {
 	if (page === undefined) {
 		return [];
@@ -227,6 +228,66 @@ const getListOfTags = async () => {
 	return tagsList;
 };
 
+const getListTrendingTokens = async () => {
+	let trendingTokens = [];
+	let rawData = [];
+	rawData = await database
+		.collection("tokens")
+		.where("type", "==", "token")
+		.get();
+
+	rawData.forEach((doc) => {
+		//each doc is a coin
+		trendingTokens.push({
+			name: doc.data()["name"],
+			symbol: doc.data()["symbol"],
+			percentChange24h: doc.data()["usd"]["percentChange24h"],
+			price: doc.data()["usd"]["price"],
+		});
+	});
+
+	//sort decs
+	trendingTokens.sort(
+		(firstObj, secondObj) =>
+			secondObj["percentChange24h"] - firstObj["percentChange24h"],
+	);
+
+	// get 10 tokens
+	trendingTokens = trendingTokens.slice(0, 10);
+
+	return trendingTokens;
+};
+
+const getListTrendingCoins = async () => {
+	let trendingCoins = [];
+	let rawData = [];
+
+	rawData = await database
+		.collection("tokens")
+		.where("type", "==", "coin")
+		.get();
+
+	// get data
+	rawData.forEach((doc) => {
+		trendingCoins.push({
+			name: doc.data()["name"],
+			symbol: doc.data()["symbol"],
+			percentChange24h: doc.data()["usd"]["percentChange24h"],
+			price: doc.data()["usd"]["price"],
+		});
+	});
+
+	// sort
+	trendingCoins.sort(
+		(firstObj, secondObj) =>
+			secondObj["percentChange24h"] - firstObj["percentChange24h"],
+	);
+
+	// cut 10 field
+	trendingCoins = trendingCoins.slice(0, 10);
+	return trendingCoins;
+};
+
 module.exports = {
 	getUserByUsername,
 	getUserByEmail,
@@ -241,4 +302,6 @@ module.exports = {
 	getListOfSharks,
 	getSharksLength,
 	getListOfTags,
+	getListTrendingTokens,
+	getListTrendingCoins,
 };
