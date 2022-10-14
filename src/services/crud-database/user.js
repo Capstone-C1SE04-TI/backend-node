@@ -4,6 +4,7 @@ const firebase = require("firebase-admin");
 const { QUERY_LIMIT_ITEM } = require("./../../constants");
 const { randomFirestoreDocumentId } = require("../../helpers");
 const { getUsersLength } = require("./admin");
+const { isEqual } = require("lodash");
 
 const getUserByUsername = async (username) => {
 	let user;
@@ -241,6 +242,7 @@ const getListTrendingTokens = async () => {
 		trendingTokens.push({
 			name: doc.data()["name"],
 			symbol: doc.data()["symbol"],
+			iconURL: doc.data()['iconURL'],
 			percentChange24h: doc.data()["usd"]["percentChange24h"],
 			price: doc.data()["usd"]["price"],
 		});
@@ -264,7 +266,7 @@ const getListTrendingCoins = async () => {
 
 	rawData = await database
 		.collection("tokens")
-		.where("type", "==", "coin")
+		.where("type", '==', "coin")
 		.get();
 
 	// get data
@@ -272,6 +274,7 @@ const getListTrendingCoins = async () => {
 		trendingCoins.push({
 			name: doc.data()["name"],
 			symbol: doc.data()["symbol"],
+			iconURL: doc.data()['iconURL'],
 			percentChange24h: doc.data()["usd"]["percentChange24h"],
 			price: doc.data()["usd"]["price"],
 		});
