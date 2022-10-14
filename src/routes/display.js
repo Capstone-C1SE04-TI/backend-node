@@ -84,27 +84,6 @@ router.get("/coins", displayController.getCoins);
 
 /**
  * @swagger
- * /display/coin/details:
- *   get:
- *     description: Display coin or token details
- *     tags: [Display]
- *     parameters:
- *      - in: query
- *        name: symbol
- *        schema:
- *          type: string
- *     responses:
- *       200:
- *         description: Get coin or token details successfully
- *       401:
- *         description: Get coin or token details failed
- *       400:
- *         description: Bad request
- */
-router.get("/coin/details", displayController.getCoinOrTokenDetails);
-
-/**
- * @swagger
  * /display/tokens:
  *   get:
  *     description: Get list tokens
@@ -123,6 +102,27 @@ router.get("/coin/details", displayController.getCoinOrTokenDetails);
  *         description: Bad request
  */
 router.get("/tokens", displayController.getTokens);
+
+/**
+ * @swagger
+ * /display/coin/details:
+ *   get:
+ *     description: Display coin or token details
+ *     tags: [Display]
+ *     parameters:
+ *      - in: query
+ *        name: symbol
+ *        schema:
+ *          type: string
+ *     responses:
+ *       200:
+ *         description: Get coin or token details successfully
+ *       401:
+ *         description: Get coin or token details failed
+ *       400:
+ *         description: Bad request
+ */
+router.get("/coin/details", displayController.getCoinOrTokenDetails);
 
 /**
  * @swagger
