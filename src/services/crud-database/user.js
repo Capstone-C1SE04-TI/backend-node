@@ -141,6 +141,7 @@ const getListOfCoinsAndTokens = async (page) => {
 			name: data.name,
 			symbol: data.symbol,
 			iconURL: data.iconURL,
+			tagNames: data.tagNames,
 			usd: data.usd,
 			marketCap: data.marketCap,
 			circulatingSupply: data.circulatingSupply,
@@ -196,7 +197,23 @@ const getListOfCoins = async (page) => {
 
 	coins.forEach((doc) => {
 		const data = doc.data();
-		coinsList.push(data);
+
+		const coin = {
+			id: data.id,
+			name: data.name,
+			symbol: data.symbol,
+			iconURL: data.iconURL,
+			tagNames: data.tagNames,
+			usd: data.usd,
+			marketCap: data.marketCap,
+			circulatingSupply: data.circulatingSupply,
+			pricesLast1Day:
+				data.id >= 1 && data.id <= 10
+					? Object.entries(data.prices.day)
+					: null,
+		};
+
+		coinsList.push(coin);
 	});
 
 	return coinsList;
@@ -243,7 +260,23 @@ const getListOfTokens = async (page) => {
 
 	tokens.forEach((doc) => {
 		const data = doc.data();
-		tokensList.push(data);
+
+		const token = {
+			id: data.id,
+			name: data.name,
+			symbol: data.symbol,
+			iconURL: data.iconURL,
+			tagNames: data.tagNames,
+			usd: data.usd,
+			marketCap: data.marketCap,
+			circulatingSupply: data.circulatingSupply,
+			pricesLast1Day:
+				data.id >= 1 && data.id <= 10
+					? Object.entries(data.prices.day)
+					: null,
+		};
+
+		tokensList.push(token);
 	});
 
 	return tokensList;
@@ -261,6 +294,72 @@ const getTokensLength = async () => {
 		});
 
 	return length || 0;
+};
+
+const getListTrendingTokens = async () => {
+	let trendingTokens = [];
+	let rawData = [];
+	rawData = await database
+		.collection("tokens")
+		.where("type", "==", "token")
+		.get();
+
+	rawData.forEach((doc) => {
+		//each doc is a coin
+		trendingTokens.push({
+			id: doc.data()["id"],
+			name: doc.data()["name"],
+			symbol: doc.data()["symbol"],
+			iconURL: doc.data()["iconURL"],
+			tagNames: doc.data()["tagNames"],
+			percentChange24h: doc.data()["usd"]["percentChange24h"],
+			price: doc.data()["usd"]["price"],
+		});
+	});
+
+	//sort decs
+	trendingTokens.sort(
+		(firstObj, secondObj) =>
+			secondObj["percentChange24h"] - firstObj["percentChange24h"],
+	);
+
+	// get 10 tokens
+	trendingTokens = trendingTokens.slice(0, 10);
+
+	return trendingTokens;
+};
+
+const getListTrendingCoins = async () => {
+	let trendingCoins = [];
+	let rawData = [];
+
+	rawData = await database
+		.collection("tokens")
+		.where("type", "==", "coin")
+		.get();
+
+	// get data
+	rawData.forEach((doc) => {
+		trendingCoins.push({
+			id: doc.data()["id"],
+			name: doc.data()["name"],
+			symbol: doc.data()["symbol"],
+			iconURL: doc.data()["iconURL"],
+			tagNames: doc.data()["tagNames"],
+			percentChange24h: doc.data()["usd"]["percentChange24h"],
+			price: doc.data()["usd"]["price"],
+		});
+	});
+
+	// sort
+	trendingCoins.sort(
+		(firstObj, secondObj) =>
+			secondObj["percentChange24h"] - firstObj["percentChange24h"],
+	);
+
+	// cut 10 field
+	trendingCoins = trendingCoins.slice(0, 10);
+	return trendingCoins;
 };
 
 const getCoinOrTokenDetails = async (coinSymbol) => {
@@ -337,68 +436,6 @@ const getListOfTags = async () => {
 	});
 
 	return tagsList;
-};
-
-const getListTrendingTokens = async () => {
-	let trendingTokens = [];
-	let rawData = [];
-	rawData = await database
-		.collection("tokens")
-		.where("type", "==", "token")
-		.get();
-
-	rawData.forEach((doc) => {
-		//each doc is a coin
-		trendingTokens.push({
-			name: doc.data()["name"],
-			symbol: doc.data()["symbol"],
-			iconURL: doc.data()['iconURL'],
-			percentChange24h: doc.data()["usd"]["percentChange24h"],
-			price: doc.data()["usd"]["price"],
-		});
-	});
-
-	//sort decs
-	trendingTokens.sort(
-		(firstObj, secondObj) =>
-			secondObj["percentChange24h"] - firstObj["percentChange24h"],
-	);
-
-	// get 10 tokens
-	trendingTokens = trendingTokens.slice(0, 10);
-
-	return trendingTokens;
-};
-
-const getListTrendingCoins = async () => {
-	let trendingCoins = [];
-	let rawData = [];
-
-	rawData = await database
-		.collection("tokens")
-		.where("type", '==', "coin")
-		.get();
-
-	// get data
-	rawData.forEach((doc) => {
-		trendingCoins.push({
-			name: doc.data()["name"],
-			symbol: doc.data()["symbol"],
-			iconURL: doc.data()['iconURL'],
-			percentChange24h: doc.data()["usd"]["percentChange24h"],
-			price: doc.data()["usd"]["price"],
-		});
-	});
-
-	// sort
-	trendingCoins.sort(
-		(firstObj, secondObj) =>
-			secondObj["percentChange24h"] - firstObj["percentChange24h"],
-	);
-
-	// cut 10 field
-	trendingCoins = trendingCoins.slice(0, 10);
-	return trendingCoins;
 };
 
 module.exports = {
