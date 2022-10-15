@@ -4,7 +4,7 @@ const { getListOfUsers } = require("../services/crud-database/admin");
 
 function UserController() {
 	this.getUsersList = async (req, res, next) => {
-		await getListOfUsers(page)
+		await getListOfUsers()
 			.then((usersList) => {
 				if (usersList.length == 0) {
 					return res.status(400).json({
