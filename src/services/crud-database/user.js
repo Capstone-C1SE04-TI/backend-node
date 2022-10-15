@@ -233,6 +233,47 @@ const getListTrendingCoins = async () => {
 	return trendingCoins;
 };
 
+const getListTrendingTokens = async () => {
+	let trendingTokens = [];
+	let rawData = [];
+
+	rawData = await database
+		.collection("tokens")
+		.where("type", "==", "token")
+		.get();
+
+	// get data
+	rawData.forEach((doc) => {
+		trendingTokens.push({
+			id: doc.data()["id"],
+			name: doc.data()["name"],
+			symbol: doc.data()["symbol"],
+			iconURL: doc.data()["iconURL"],
+			tagNames: doc.data()["tagNames"],
+			circulatingSupply: doc.data()["circulatingSupply"],
+			marketCap: doc.data()["marketCap"],
+			usd: {
+				percentChange24h: doc.data()["usd"]["percentChange24h"],
+				percentChange7d: doc.data()["usd"]["percentChange7d"],
+				volume24h: doc.data()["usd"]["volume24h"],
+				price: doc.data()["usd"]["price"],
+			},
+		});
+	});
+
+	// sort desc
+	trendingTokens.sort(
+		(firstObj, secondObj) =>
+			secondObj["usd"]["percentChange24h"] -
+			firstObj["usd"]["percentChange24h"],
+	);
+
+	// get first 10 tokens
+	trendingTokens = trendingTokens.slice(0, 10);
+
+	return trendingTokens;
+};
+
 const getCoinOrTokenDetails = async (coinSymbol) => {
 	let coinInfo = {};
 	let fullInfo = [];
@@ -319,4 +360,5 @@ module.exports = {
 	getListOfTags,
 	getListReducingCoinsAndTokens,
 	getListTrendingCoins,
+	getListTrendingTokens,
 };

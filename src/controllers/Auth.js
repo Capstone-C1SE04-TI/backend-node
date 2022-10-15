@@ -23,14 +23,19 @@ function AuthController() {
 		// Validate request body
 		const { status, error } = await validateSignUpBody(req, res, next);
 		if (status === "failed") {
-			return res.status(400).json({ message: error });
+			return res.status(400).json({ message: error, error: error });
 		}
 
 		if (await checkExistedUsername(username)) {
-			return res.status(400).json({ message: "username-existed" });
+			return res.status(400).json({
+				message: "username-existed",
+				error: "username-existed",
+			});
 		}
 		if (await checkExistedEmail(email)) {
-			return res.status(400).json({ message: "email-existed" });
+			return res
+				.status(400)
+				.json({ message: "email-existed", error: "email-existed" });
 		}
 
 		// Encode password and create new user in DB
@@ -39,6 +44,7 @@ function AuthController() {
 				.then(() => {
 					return res.status(200).json({
 						message: "successfully",
+						error: null,
 					});
 				})
 				.catch((error) => {
@@ -56,11 +62,14 @@ function AuthController() {
 		// Validate request body
 		const { status, error } = await validateSignInBody(req, res, next);
 		if (status === "failed") {
-			return res.status(400).json({ message: error });
+			return res.status(400).json({ message: error, error: error });
 		}
 
 		if (!(await checkExistedUsername(username))) {
-			return res.status(404).json({ message: "username-notfound" });
+			return res.status(404).json({
+				message: "username-notfound",
+				error: "username-notfound",
+			});
 		} else {
 			const hashPassword = await getPasswordByUsername(username);
 
@@ -83,21 +92,25 @@ function AuthController() {
 
 							return res.status(200).json({
 								message: "successfully",
+								error: null,
 							});
 						} else {
 							if (await isAuthed(req)) {
 								return res.status(200).json({
 									message: "successfully",
+									error: null,
 								});
 							} else {
 								return res.status(401).json({
 									message: "failed-unauthorized",
+									error: "failed-unauthorized",
 								});
 							}
 						}
 					} else {
 						return res.status(400).json({
 							message: "incorrect-password",
+							error: "incorrect-password",
 						});
 					}
 				},
@@ -110,9 +123,11 @@ function AuthController() {
 			req.user = null;
 			req.session = null;
 
-			return res.status(200).json({ message: "successfully" });
+			return res
+				.status(200)
+				.json({ message: "successfully", error: null });
 		} catch (error) {
-			return res.status(400).json({ message: "failed" });
+			return res.status(400).json({ message: "failed", error: error });
 		}
 	};
 }
