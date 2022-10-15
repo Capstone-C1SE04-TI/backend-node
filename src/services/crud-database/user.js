@@ -182,7 +182,8 @@ const getListReducingCoinsAndTokens = async () => {
 	//sort asc
 	reducingCoinsAndTokens.sort(
 		(firstObj, secondObj) =>
-			firstObj["percentChange24h"] - secondObj["percentChange24h"],
+			firstObj["usd"]["percentChange24h"] -
+			secondObj["usd"]["percentChange24h"],
 	);
 
 	// get first 10 tokens
@@ -222,7 +223,8 @@ const getListTrendingCoins = async () => {
 	// sort desc
 	trendingCoins.sort(
 		(firstObj, secondObj) =>
-			secondObj["percentChange24h"] - firstObj["percentChange24h"],
+			secondObj["usd"]["percentChange24h"] -
+			firstObj["usd"]["percentChange24h"],
 	);
 
 	// get first 10 coins
