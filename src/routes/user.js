@@ -14,11 +14,6 @@ const userController = require("../controllers/User");
  *   get:
  *     description: Get list of users
  *     tags: [User]
- *     parameters:
- *      - in: query
- *        name: page
- *        schema:
- *          type: string
  *     responses:
  *       200:
  *         description: Get list of users successfully
@@ -27,6 +22,6 @@ const userController = require("../controllers/User");
  *       400:
  *         description: Bad request
  */
-router.get("/list", userController.getlist);
+router.get("/list", userController.getUsersList);
 
 module.exports = router;
