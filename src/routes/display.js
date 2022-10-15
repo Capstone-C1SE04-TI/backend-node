@@ -61,6 +61,22 @@ router.get("/coins/trending", displayController.getTrendingCoins);
 
 /**
  * @swagger
+ * /display/tokens/trending:
+ *   get:
+ *     description: Get top 10 trending tokens
+ *     tags: [Display]
+ *     responses:
+ *       200:
+ *         description: Get top 10 trending tokens successfully
+ *       401:
+ *         description: Get top 10 trending tokens failed
+ *       400:
+ *         description: Bad request
+ */
+router.get("/tokens/trending", displayController.getTrendingTokens);
+
+/**
+ * @swagger
  * /display/coin/details:
  *   get:
  *     description: Get coin or token details
