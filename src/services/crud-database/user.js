@@ -4,6 +4,7 @@ const firebase = require("firebase-admin");
 const { QUERY_LIMIT_ITEM } = require("./../../constants");
 const { randomFirestoreDocumentId } = require("../../helpers");
 const { getUsersLength } = require("./admin");
+const { isEqual } = require("lodash");
 
 const getUserByUsername = async (username) => {
 	let user;
@@ -112,25 +113,9 @@ const getPasswordByUsername = async (username) => {
 	return hashPassword;
 };
 
-const getListOfCoinsAndTokens = async (page) => {
-	if (page === undefined) {
-		return [];
-	}
-
-	let coins = [];
+const getListOfCoinsAndTokens = async () => {
 	let coinsList = [];
-
-	if (page === null) {
-		coins = await database.collection("tokens").orderBy("id", "asc").get();
-	} else {
-		const startIndex = (page - 1) * QUERY_LIMIT_ITEM + 1;
-		coins = await database
-			.collection("tokens")
-			.orderBy("id", "asc")
-			.startAt(startIndex)
-			.limit(QUERY_LIMIT_ITEM)
-			.get();
-	}
+	let coins = await database.collection("tokens").orderBy("id", "asc").get();
 
 	coins.forEach((doc) => {
 		const data = doc.data();
@@ -140,6 +125,7 @@ const getListOfCoinsAndTokens = async (page) => {
 			name: data.name,
 			symbol: data.symbol,
 			iconURL: data.iconURL,
+			tagNames: data.tagNames,
 			usd: data.usd,
 			marketCap: data.marketCap,
 			circulatingSupply: data.circulatingSupply,
@@ -168,98 +154,124 @@ const getCoinsAndTokensLength = async () => {
 	return length || 0;
 };
 
-const getListOfCoins = async (page) => {
-	if (page === undefined) {
-		return [];
-	}
+const getListReducingCoinsAndTokens = async () => {
+	let reducingCoinsAndTokens = [];
+	let rawData = [];
 
-	let coins = [];
-	let coinsList = [];
+	rawData = await database.collection("tokens").get();
 
-	if (page === null) {
-		coins = await database
-			.collection("tokens")
-			.where("type", "==", "coin")
-			.orderBy("id", "asc")
-			.get();
-	} else {
-		const startIndex = (page - 1) * QUERY_LIMIT_ITEM + 1;
-		coins = await database
-			.collection("tokens")
-			.where("type", "==", "coin")
-			.orderBy("id", "asc")
-			.startAt(startIndex)
-			.limit(QUERY_LIMIT_ITEM)
-			.get();
-	}
-
-	coins.forEach((doc) => {
-		const data = doc.data();
-		coinsList.push(data);
+	// get data
+	rawData.forEach((doc) => {
+		reducingCoinsAndTokens.push({
+			id: doc.data()["id"],
+			name: doc.data()["name"],
+			symbol: doc.data()["symbol"],
+			iconURL: doc.data()["iconURL"],
+			tagNames: doc.data()["tagNames"],
+			usd: {
+				percentChange24h: doc.data()["usd"]["percentChange24h"],
+				price: doc.data()["usd"]["price"],
+			},
+			pricesLast1Day:
+				doc.data()["id"] >= 1 && doc.data()["id"] <= 10
+					? Object.entries(doc.data()["prices"]["day"])
+					: null,
+		});
 	});
 
-	return coinsList;
+	//sort asc
+	reducingCoinsAndTokens.sort(
+		(firstObj, secondObj) =>
+			firstObj["usd"]["percentChange24h"] -
+			secondObj["usd"]["percentChange24h"],
+	);
+
+	// get first 10 tokens
+	reducingCoinsAndTokens = reducingCoinsAndTokens.slice(0, 10);
+
+	return reducingCoinsAndTokens;
 };
 
-const getCoinsLength = async () => {
-	let length = 0;
+const getListTrendingCoins = async () => {
+	let trendingCoins = [];
+	let rawData = [];
 
-	await database
+	rawData = await database
 		.collection("tokens")
 		.where("type", "==", "coin")
-		.get()
-		.then((snap) => {
-			length = snap.size;
+		.get();
+
+	// get data
+	rawData.forEach((doc) => {
+		trendingCoins.push({
+			id: doc.data()["id"],
+			name: doc.data()["name"],
+			symbol: doc.data()["symbol"],
+			iconURL: doc.data()["iconURL"],
+			tagNames: doc.data()["tagNames"],
+			circulatingSupply: doc.data()["circulatingSupply"],
+			marketCap: doc.data()["marketCap"],
+			usd: {
+				percentChange24h: doc.data()["usd"]["percentChange24h"],
+				percentChange7d: doc.data()["usd"]["percentChange7d"],
+				volume24h: doc.data()["usd"]["volume24h"],
+				price: doc.data()["usd"]["price"],
+			},
 		});
-
-	return length || 0;
-};
-
-const getListOfTokens = async (page) => {
-	if (page === undefined) {
-		return [];
-	}
-
-	let tokens = [];
-	let tokensList = [];
-
-	if (page === null) {
-		tokens = await database
-			.collection("tokens")
-			.where("type", "==", "token")
-			.orderBy("id", "asc")
-			.get();
-	} else {
-		const startIndex = (page - 1) * QUERY_LIMIT_ITEM + 1;
-		tokens = await database
-			.collection("tokens")
-			.where("type", "==", "token")
-			.orderBy("id", "asc")
-			.startAt(startIndex)
-			.limit(QUERY_LIMIT_ITEM)
-			.get();
-	}
-
-	tokens.forEach((doc) => {
-		const data = doc.data();
-		tokensList.push(data);
 	});
 
-	return tokensList;
+	// sort desc
+	trendingCoins.sort(
+		(firstObj, secondObj) =>
+			secondObj["usd"]["percentChange24h"] -
+			firstObj["usd"]["percentChange24h"],
+	);
+
+	// get first 10 coins
+	trendingCoins = trendingCoins.slice(0, 10);
+
+	return trendingCoins;
 };
 
-const getTokensLength = async () => {
-	let length = 0;
+const getListTrendingTokens = async () => {
+	let trendingTokens = [];
+	let rawData = [];
 
-	await database
+	rawData = await database
 		.collection("tokens")
 		.where("type", "==", "token")
-		.get()
-		.then((snap) => {
-			length = snap.size;
-		});
+		.get();
 
-	return length || 0;
+	// get data
+	rawData.forEach((doc) => {
+		trendingTokens.push({
+			id: doc.data()["id"],
+			name: doc.data()["name"],
+			symbol: doc.data()["symbol"],
+			iconURL: doc.data()["iconURL"],
+			tagNames: doc.data()["tagNames"],
+			circulatingSupply: doc.data()["circulatingSupply"],
+			marketCap: doc.data()["marketCap"],
+			usd: {
+				percentChange24h: doc.data()["usd"]["percentChange24h"],
+				percentChange7d: doc.data()["usd"]["percentChange7d"],
+				volume24h: doc.data()["usd"]["volume24h"],
+				price: doc.data()["usd"]["price"],
+			},
+		});
+	});
+
+	// sort desc
+	trendingTokens.sort(
+		(firstObj, secondObj) =>
+			secondObj["usd"]["percentChange24h"] -
+			firstObj["usd"]["percentChange24h"],
+	);
+
+	// get first 10 tokens
+	trendingTokens = trendingTokens.slice(0, 10);
+
+	return trendingTokens;
 };
 
 const getCoinOrTokenDetails = async (coinSymbol) => {
@@ -276,6 +288,16 @@ const getCoinOrTokenDetails = async (coinSymbol) => {
 
 		fullInfo.forEach((doc) => {
 			coinInfo = doc.data();
+
+			coinInfo.prices =
+				coinInfo["id"] >= 1 && coinInfo["id"] <= 10
+					? {
+							day: Object.entries(coinInfo["prices"]["day"]),
+							week: Object.entries(coinInfo["prices"]["week"]),
+							month: Object.entries(coinInfo["prices"]["month"]),
+							year: Object.entries(coinInfo["prices"]["year"]),
+					  }
+					: null;
 		});
 	}
 
@@ -285,25 +307,9 @@ const getCoinOrTokenDetails = async (coinSymbol) => {
 	return coinInfo;
 };
 
-const getListOfSharks = async (page) => {
-	if (page === undefined) {
-		return [];
-	}
-
-	let sharks = [];
+const getListOfSharks = async () => {
 	let sharksList = [];
-
-	if (page === null) {
-		sharks = await database.collection("sharks").orderBy("id", "asc").get();
-	} else {
-		const startIndex = (page - 1) * QUERY_LIMIT_ITEM + 1;
-		sharks = await database
-			.collection("sharks")
-			.orderBy("id", "asc")
-			.startAt(startIndex)
-			.limit(QUERY_LIMIT_ITEM)
-			.get();
-	}
+	let sharks = await database.collection("sharks").orderBy("id", "asc").get();
 
 	sharks.forEach((doc) => {
 		sharksList.push(doc.data());
@@ -338,66 +344,6 @@ const getListOfTags = async () => {
 	return tagsList;
 };
 
-const getListTrendingTokens = async () => {
-	let trendingTokens = [];
-	let rawData = [];
-	rawData = await database
-		.collection("tokens")
-		.where("type", "==", "token")
-		.get();
-
-	rawData.forEach((doc) => {
-		//each doc is a coin
-		trendingTokens.push({
-			name: doc.data()["name"],
-			symbol: doc.data()["symbol"],
-			percentChange24h: doc.data()["usd"]["percentChange24h"],
-			price: doc.data()["usd"]["price"],
-		});
-	});
-
-	//sort decs
-	trendingTokens.sort(
-		(firstObj, secondObj) =>
-			secondObj["percentChange24h"] - firstObj["percentChange24h"],
-	);
-
-	// get 10 tokens
-	trendingTokens = trendingTokens.slice(0, 10);
-
-	return trendingTokens;
-};
-
-const getListTrendingCoins = async () => {
-	let trendingCoins = [];
-	let rawData = [];
-
-	rawData = await database
-		.collection("tokens")
-		.where("type", "==", "coin")
-		.get();
-
-	// get data
-	rawData.forEach((doc) => {
-		trendingCoins.push({
-			name: doc.data()["name"],
-			symbol: doc.data()["symbol"],
-			percentChange24h: doc.data()["usd"]["percentChange24h"],
-			price: doc.data()["usd"]["price"],
-		});
-	});
-
-	// sort
-	trendingCoins.sort(
-		(firstObj, secondObj) =>
-			secondObj["percentChange24h"] - firstObj["percentChange24h"],
-	);
-
-	// cut 10 field
-	trendingCoins = trendingCoins.slice(0, 10);
-	return trendingCoins;
-};
-
 module.exports = {
 	getUserByUsername,
 	getUserByEmail,
@@ -408,14 +354,11 @@ module.exports = {
 	getPasswordByUsername,
 	getListOfCoinsAndTokens,
 	getCoinsAndTokensLength,
-	getListOfCoins,
-	getCoinsLength,
-	getListOfTokens,
-	getTokensLength,
 	getCoinOrTokenDetails,
 	getListOfSharks,
 	getSharksLength,
 	getListOfTags,
-	getListTrendingTokens,
+	getListReducingCoinsAndTokens,
 	getListTrendingCoins,
+	getListTrendingTokens,
 };
