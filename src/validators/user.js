@@ -130,6 +130,16 @@ const validateSubmitCodeBody = async (req, res, next) => {
 };
 
 const validateCreateNewPasswordBody = async (req, res, next) => {
+	await body("email")
+		.trim()
+		.notEmpty()
+		.withMessage("email-required")
+		.matches(/.+@.+\..+/)
+		.withMessage("email-invalid")
+		.isLength({ min: 16, max: 40 })
+		.withMessage("email-name-must-6-30-characters")
+		.run(req);
+
 	await body("password")
 		.trim()
 		.notEmpty()

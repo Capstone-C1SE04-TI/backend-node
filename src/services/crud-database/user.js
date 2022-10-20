@@ -70,6 +70,14 @@ const updateUserConfirmationCode = async (docId, code) => {
 	return user;
 };
 
+const updateUserPassword = async (docId, password) => {
+	const user = database.collection("users").doc(docId);
+
+	await user.update({ password: password });
+
+	return user;
+};
+
 const checkExistedUsername = async (username) => {
 	isExistedUsername = false;
 
@@ -349,6 +357,7 @@ module.exports = {
 	getUserByEmail,
 	createNewUser,
 	updateUserConfirmationCode,
+	updateUserPassword,
 	checkExistedUsername,
 	checkExistedEmail,
 	getPasswordByUsername,
