@@ -99,19 +99,38 @@ function ForgotPasswordController() {
 	};
 
 	this.submitCode = async (req, res, next) => {
-		const { status, error } = await validateSubmitCodeBody(req, res, next);
+		try {
+			const { status, error } = await validateSubmitCodeBody(
+				req,
+				res,
+				next,
+			);
 
-		if (status === "failed") {
-			return res.status(400).json({ message: error });
-		} else {
-			const { email, code } = req.body;
-			const user = await getUserByEmail(email);
-
-			if (user && user.confirmationCode === code) {
-				return res.status(200).json({ message: "successfully" });
+			if (status === "failed") {
+				return res.status(400).json({ message: error, error: null });
 			} else {
-				return res.status(400).json({ message: "failed" });
+				const { email, code } = req.body;
+				const user = await getUserByEmail(email);
+
+				if (user) {
+					if (user.confirmationCode === code) {
+						return res
+							.status(200)
+							.json({ message: "successfully", error: null });
+					} else {
+						return res.status(400).json({
+							message: "failed-wrong-code",
+							error: null,
+						});
+					}
+				} else {
+					return res
+						.status(400)
+						.json({ message: "failed-user-notfound", error: null });
+				}
 			}
+		} catch (error) {
+			return res.status(400).json({ message: "failed", error: error });
 		}
 	};
 
@@ -191,13 +210,13 @@ function ForgotPasswordController() {
 		if (status === "failed") {
 			return res.status(400).json({ message: error });
 		} else {
-			const { email, password, passwordConfirm } = req.body;
+			const { email, password } = req.body;
 			const user = await getUserByEmail(email);
 
 			if (user) {
 				// Encode password & update in DB
 				cryptPassword(password, async (error, hashPassword) => {
-					await updateUserPassword(docId, hashPassword)
+					await updateUserPassword(user.docId, hashPassword)
 						.then(() => {
 							return res.status(200).json({
 								message: "successfully",

@@ -114,14 +114,18 @@ router.post("/resend-code", forgotPasswordController.resendCode);
  *           schema:
  *             type: object
  *             required:
+ *               - email
  *               - password
  *               - confirmPassword
  *             properties:
+ *               email:
+ *                  type: string
  *               password:
  *                  type: string
  *               confirmPassword:
  *                  type: string
  *             example:
+ *               email: "hieuhn@gmail.com"
  *               password: "12345678"
  *               confirmPassword: "12345678"
  *     responses:
