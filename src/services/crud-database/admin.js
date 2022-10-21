@@ -1,5 +1,4 @@
 const database = require("../../configs/connect-database");
-const { QUERY_LIMIT_ITEM } = require("../../constants");
 
 const getListOfUsers = async () => {
 	let usersList = [];
@@ -25,7 +24,39 @@ const getUsersLength = async () => {
 	return length || 0;
 };
 
+const getDetailUser = async (userId) => {
+	let userInfo = {};
+
+	if (!userId) {
+		return {};
+	} else {
+		const users = await database
+			.collection("users")
+			.where("userId", "==", userId)
+			.get();
+
+		users.forEach((doc) => {
+			const data = doc.data();
+
+			userInfo = {
+				userId: data.userId,
+				username: data.username,
+				email: data.email,
+				phoneNumber: data.phoneNumber,
+				avatar: data.avatar,
+				updatedDate: data.updatedDate,
+				createdDate: data.createdDate,
+			};
+		});
+	}
+
+	if (Object.entries(userInfo).length === 0) return {};
+
+	return userInfo;
+};
+
 module.exports = {
 	getListOfUsers,
 	getUsersLength,
+	getDetailUser,
 };

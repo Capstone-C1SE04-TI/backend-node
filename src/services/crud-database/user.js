@@ -1,10 +1,7 @@
 const database = require("../../configs/connect-database");
 const firebase = require("firebase-admin");
-
-const { QUERY_LIMIT_ITEM } = require("./../../constants");
-const { randomFirestoreDocumentId } = require("../../helpers");
+const { randomFirestoreDocumentId, comparePassword } = require("../../helpers");
 const { getUsersLength } = require("./admin");
-const { isEqual } = require("lodash");
 
 const getUserByUsername = async (username) => {
 	let user;
@@ -55,6 +52,7 @@ const createNewUser = async ({
 		email: email,
 		phoneNumber: phoneNumber,
 		password: hashPassword,
+		avatar: "",
 		createdDate: currentTimestamp,
 		updatedDate: currentTimestamp,
 	};
@@ -107,7 +105,7 @@ const checkExistedEmail = async (email) => {
 };
 
 const getPasswordByUsername = async (username) => {
-	let hashPassword;
+	let password;
 
 	const users = await database
 		.collection("users")
@@ -115,10 +113,43 @@ const getPasswordByUsername = async (username) => {
 		.get();
 
 	users.forEach((doc) => {
-		hashPassword = doc.get("password");
+		password = doc.get("password");
 	});
 
-	return hashPassword;
+	return password;
+};
+
+const getPasswordByEmail = async (email) => {
+	let password;
+
+	const users = await database
+		.collection("users")
+		.where("email", "==", email)
+		.get();
+
+	users.forEach((doc) => {
+		password = doc.get("password");
+	});
+
+	return password;
+};
+
+const checkCorrectOldPassword = async (email, oldPassword) => {
+	const password = await getPasswordByEmail(email);
+
+	if (password) {
+		let check = comparePassword(
+			oldPassword,
+			password,
+			(error, isPasswordMatch) => {
+				return isPasswordMatch;
+			},
+		);
+
+		return check;
+	} else {
+		return false;
+	}
 };
 
 const getListOfCoinsAndTokens = async () => {
@@ -361,6 +392,8 @@ module.exports = {
 	checkExistedUsername,
 	checkExistedEmail,
 	getPasswordByUsername,
+	getPasswordByEmail,
+	checkCorrectOldPassword,
 	getListOfCoinsAndTokens,
 	getCoinsAndTokensLength,
 	getCoinOrTokenDetails,
