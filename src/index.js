@@ -52,3 +52,4 @@ app.listen(PORT, () => {
 	console.log(`Server is listening at http://localhost:${PORT}/`);
 	console.log(`API Documentation: http://localhost:${PORT}/api-docs/`);
 });
+ 
