@@ -1,4 +1,19 @@
 const database = require("../../configs/connect-database");
+const firebase = require("firebase-admin");
+
+const checkExistedUserId = async (userId) => {
+	let isExistedUserId = false;
+
+	const users = await database.collection("users").get();
+
+	users.forEach((doc) => {
+		if (doc.get("userId") === userId) {
+			isExistedUserId = true;
+		}
+	});
+
+	return isExistedUserId;
+};
 
 const getListOfUsers = async () => {
 	let usersList = [];
@@ -24,7 +39,7 @@ const getUsersLength = async () => {
 	return length || 0;
 };
 
-const getDetailUser = async (userId) => {
+const getUserProfile = async (userId) => {
 	let userInfo = {};
 
 	if (!userId) {
@@ -55,8 +70,65 @@ const getDetailUser = async (userId) => {
 	return userInfo;
 };
 
+const checkExistedEmailForUpdateProfile = async (userId, email) => {
+	let isExistedEmail = false;
+
+	const users = await database.collection("users").get();
+
+	users.forEach((doc) => {
+		if (doc.get("email") == email && doc.get("userId") != userId) {
+			isExistedEmail = true;
+		}
+	});
+
+	return isExistedEmail;
+};
+
+const updateUserProfile = async (userId, updateInfo) => {
+	try {
+		if (!userId) {
+			return "userid-required";
+		} else {
+			const { email, phoneNumber, avatar } = updateInfo;
+
+			if (!(await checkExistedUserId(userId))) return "user-notfound";
+
+			if (
+				email &&
+				(await checkExistedEmailForUpdateProfile(userId, email))
+			)
+				return "email-existed";
+
+			const users = await database
+				.collection("users")
+				.where("userId", "==", userId)
+				.get();
+
+			const updateInfos = {};
+			if (email) updateInfos.email = email;
+			if (phoneNumber) updateInfos.phoneNumber = phoneNumber;
+			if (avatar) updateInfos.avatar = avatar;
+
+			if (Object.entries(updateInfos).length !== 0) {
+				users.forEach((doc) => {
+					doc.ref.update({
+						...updateInfos,
+						updatedDate: firebase.firestore.Timestamp.now(),
+					});
+				});
+			}
+
+			return "success";
+		}
+	} catch (error) {
+		return "error";
+	}
+};
+
 module.exports = {
 	getListOfUsers,
 	getUsersLength,
-	getDetailUser,
+	getUserProfile,
+	checkExistedEmailForUpdateProfile,
+	updateUserProfile,
 };

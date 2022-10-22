@@ -77,7 +77,7 @@ const updateUserPassword = async (docId, password) => {
 };
 
 const checkExistedUsername = async (username) => {
-	isExistedUsername = false;
+	let isExistedUsername = false;
 
 	const users = await database.collection("users").get();
 
@@ -91,7 +91,7 @@ const checkExistedUsername = async (username) => {
 };
 
 const checkExistedEmail = async (email) => {
-	isExistedEmail = false;
+	let isExistedEmail = false;
 
 	const users = await database.collection("users").get();
 
@@ -102,6 +102,20 @@ const checkExistedEmail = async (email) => {
 	});
 
 	return isExistedEmail;
+};
+
+const checkExistedUserId = async (userId) => {
+	let isExistedUserId = false;
+
+	const users = await database.collection("users").get();
+
+	users.forEach((doc) => {
+		if (doc.get("userId") === userId) {
+			isExistedUserId = true;
+		}
+	});
+
+	return isExistedUserId;
 };
 
 const getPasswordByUsername = async (username) => {
@@ -132,24 +146,6 @@ const getPasswordByEmail = async (email) => {
 	});
 
 	return password;
-};
-
-const checkCorrectOldPassword = async (email, oldPassword) => {
-	const password = await getPasswordByEmail(email);
-
-	if (password) {
-		let check = comparePassword(
-			oldPassword,
-			password,
-			(error, isPasswordMatch) => {
-				return isPasswordMatch;
-			},
-		);
-
-		return check;
-	} else {
-		return false;
-	}
 };
 
 const getListOfCoinsAndTokens = async () => {
@@ -391,9 +387,9 @@ module.exports = {
 	updateUserPassword,
 	checkExistedUsername,
 	checkExistedEmail,
+	checkExistedUserId,
 	getPasswordByUsername,
 	getPasswordByEmail,
-	checkCorrectOldPassword,
 	getListOfCoinsAndTokens,
 	getCoinsAndTokensLength,
 	getCoinOrTokenDetails,
