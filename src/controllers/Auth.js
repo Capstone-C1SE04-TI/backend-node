@@ -101,7 +101,7 @@ function AuthController() {
 									error: null,
 								});
 							} else {
-								return res.status(401).json({
+								return res.status(400).json({
 									message: "failed-unauthorized",
 									error: "failed-unauthorized",
 								});

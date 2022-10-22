@@ -1,10 +1,7 @@
 const database = require("../../configs/connect-database");
 const firebase = require("firebase-admin");
-
-const { QUERY_LIMIT_ITEM } = require("./../../constants");
-const { randomFirestoreDocumentId } = require("../../helpers");
+const { randomFirestoreDocumentId, comparePassword } = require("../../helpers");
 const { getUsersLength } = require("./admin");
-const { isEqual } = require("lodash");
 
 const getUserByUsername = async (username) => {
 	let user;
@@ -55,6 +52,7 @@ const createNewUser = async ({
 		email: email,
 		phoneNumber: phoneNumber,
 		password: hashPassword,
+		avatar: "",
 		createdDate: currentTimestamp,
 		updatedDate: currentTimestamp,
 	};
@@ -70,8 +68,16 @@ const updateUserConfirmationCode = async (docId, code) => {
 	return user;
 };
 
+const updateUserPassword = async (docId, password) => {
+	const user = database.collection("users").doc(docId);
+
+	await user.update({ password: password });
+
+	return user;
+};
+
 const checkExistedUsername = async (username) => {
-	isExistedUsername = false;
+	let isExistedUsername = false;
 
 	const users = await database.collection("users").get();
 
@@ -85,7 +91,7 @@ const checkExistedUsername = async (username) => {
 };
 
 const checkExistedEmail = async (email) => {
-	isExistedEmail = false;
+	let isExistedEmail = false;
 
 	const users = await database.collection("users").get();
 
@@ -98,8 +104,22 @@ const checkExistedEmail = async (email) => {
 	return isExistedEmail;
 };
 
+const checkExistedUserId = async (userId) => {
+	let isExistedUserId = false;
+
+	const users = await database.collection("users").get();
+
+	users.forEach((doc) => {
+		if (doc.get("userId") === userId) {
+			isExistedUserId = true;
+		}
+	});
+
+	return isExistedUserId;
+};
+
 const getPasswordByUsername = async (username) => {
-	let hashPassword;
+	let password;
 
 	const users = await database
 		.collection("users")
@@ -107,10 +127,25 @@ const getPasswordByUsername = async (username) => {
 		.get();
 
 	users.forEach((doc) => {
-		hashPassword = doc.get("password");
+		password = doc.get("password");
 	});
 
-	return hashPassword;
+	return password;
+};
+
+const getPasswordByEmail = async (email) => {
+	let password;
+
+	const users = await database
+		.collection("users")
+		.where("email", "==", email)
+		.get();
+
+	users.forEach((doc) => {
+		password = doc.get("password");
+	});
+
+	return password;
 };
 
 const getListOfCoinsAndTokens = async () => {
@@ -349,9 +384,12 @@ module.exports = {
 	getUserByEmail,
 	createNewUser,
 	updateUserConfirmationCode,
+	updateUserPassword,
 	checkExistedUsername,
 	checkExistedEmail,
+	checkExistedUserId,
 	getPasswordByUsername,
+	getPasswordByEmail,
 	getListOfCoinsAndTokens,
 	getCoinsAndTokensLength,
 	getCoinOrTokenDetails,
