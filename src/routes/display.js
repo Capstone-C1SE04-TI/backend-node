@@ -17,10 +17,8 @@ const displayController = require("../controllers/Display");
  *     responses:
  *       200:
  *         description: Get top 10 reducing coins and tokens successfully
- *       401:
- *         description: Get top 10 reducing coins and tokens failed
  *       400:
- *         description: Bad request
+ *         description: Get top 10 reducing coins and tokens failed
  */
 router.get(
 	"/coins-and-tokens/reducing",
@@ -36,10 +34,8 @@ router.get(
  *     responses:
  *       200:
  *         description: Get list of coins successfully
- *       401:
- *         description: Get list of coins failed
  *       400:
- *         description: Bad request
+ *         description: Get list of coins failed
  */
 router.get("/coins-and-tokens/all", displayController.getCoinsAndTokens);
 
@@ -52,10 +48,8 @@ router.get("/coins-and-tokens/all", displayController.getCoinsAndTokens);
  *     responses:
  *       200:
  *         description: Get top 10 trending coins successfully
- *       401:
- *         description: Get top 10 trending coins failed
  *       400:
- *         description: Bad request
+ *         description: Get top 10 trending coins failed
  */
 router.get("/coins/trending", displayController.getTrendingCoins);
 
@@ -68,10 +62,8 @@ router.get("/coins/trending", displayController.getTrendingCoins);
  *     responses:
  *       200:
  *         description: Get top 10 trending tokens successfully
- *       401:
- *         description: Get top 10 trending tokens failed
  *       400:
- *         description: Bad request
+ *         description: Get top 10 trending tokens failed
  */
 router.get("/tokens/trending", displayController.getTrendingTokens);
 
@@ -89,10 +81,8 @@ router.get("/tokens/trending", displayController.getTrendingTokens);
  *     responses:
  *       200:
  *         description: Get coin or token details successfully
- *       401:
- *         description: Get coin or token details failed
  *       400:
- *         description: Bad request
+ *         description: Get coin or token details failed
  */
 router.get("/coin/details", displayController.getCoinOrTokenDetails);
 
@@ -105,10 +95,8 @@ router.get("/coin/details", displayController.getCoinOrTokenDetails);
  *     responses:
  *       200:
  *         description: Get list of sharks successfully
- *       401:
- *         description: Get list of sharks failed
  *       400:
- *         description: Bad request
+ *         description: Get list of sharks failed
  */
 router.get("/sharks", displayController.getSharks);
 
@@ -121,10 +109,8 @@ router.get("/sharks", displayController.getSharks);
  *     responses:
  *       200:
  *         description: Get list of tags successfully
- *       401:
- *         description: Get list of tags failed
  *       400:
- *         description: Bad request
+ *         description: Get list of tags failed
  */
 router.get("/tags", displayController.getTags);
 

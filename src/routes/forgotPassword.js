@@ -30,8 +30,6 @@ const forgotPasswordController = require("../controllers/ForgotPassword");
  *       200:
  *         description: Submit email successfully
  *       400:
- *         description: Bad request
- *       401:
  *         description: Submit email failed
  *       404:
  *         description: Not found
@@ -64,8 +62,6 @@ router.post("/submit-email", forgotPasswordController.submitEmail);
  *       200:
  *         description: Submit code successfully
  *       400:
- *         description: Bad request
- *       401:
  *         description: Submit code failed
  */
 router.post("/submit-code", forgotPasswordController.submitCode);
@@ -96,8 +92,6 @@ router.post("/submit-code", forgotPasswordController.submitCode);
  *       200:
  *         description: Resend code successfully
  *       400:
- *         description: Bad request
- *       401:
  *         description: Resend code failed
  */
 router.post("/resend-code", forgotPasswordController.resendCode);
@@ -114,22 +108,24 @@ router.post("/resend-code", forgotPasswordController.resendCode);
  *           schema:
  *             type: object
  *             required:
+ *               - email
  *               - password
  *               - confirmPassword
  *             properties:
+ *               email:
+ *                  type: string
  *               password:
  *                  type: string
  *               confirmPassword:
  *                  type: string
  *             example:
+ *               email: "hieuhn@gmail.com"
  *               password: "12345678"
  *               confirmPassword: "12345678"
  *     responses:
  *       200:
  *         description: Create new password successfully
  *       400:
- *         description: Bad request
- *       401:
  *         description: Create new password failed
  */
 router.post("/create-new-password", forgotPasswordController.createNewPassword);

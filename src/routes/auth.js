@@ -45,10 +45,8 @@ const authController = require("../controllers/Auth");
  *     responses:
  *       200:
  *         description: Sign up successfully
- *       401:
- *         description: Sign up failed
  *       400:
- *         description: Bad request
+ *         description: Sign up failed
  */
 router.post("/signup", authController.signup);
 
@@ -78,8 +76,6 @@ router.post("/signup", authController.signup);
  *       200:
  *         description: Sign in successfully
  *       400:
- *         description: Bad request
- *       401:
  *         description: Sign in failed
  *       404:
  *         description: Not found
@@ -98,6 +94,6 @@ router.post("/signin", authController.signin);
  *       400:
  *         description: Sign out failed
  */
-router.post("/signout", authController.signout);    
+router.post("/signout", authController.signout);
 
 module.exports = router;
