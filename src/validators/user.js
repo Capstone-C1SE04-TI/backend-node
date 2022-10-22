@@ -249,6 +249,15 @@ const validateUpdateProfileBody = async (req, res, next) => {
 		.withMessage("phonenumber-must-10-integer-characters")
 		.run(req);
 
+	await body("website")
+		.optional({ checkFalsy: true, nullable: true })
+		.trim()
+		.matches(
+			/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
+		)
+		.withMessage("website-invalid")
+		.run(req);
+
 	await body("avatar")
 		.optional({ checkFalsy: true, nullable: true })
 		.trim()

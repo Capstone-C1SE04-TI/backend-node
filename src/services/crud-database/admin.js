@@ -104,7 +104,8 @@ const updateUserProfile = async (userId, updateInfo) => {
 		if (!userId) {
 			return "userid-required";
 		} else {
-			const { username, email, phoneNumber, avatar } = updateInfo;
+			const { username, email, phoneNumber, website, avatar } =
+				updateInfo;
 
 			if (!(await checkExistedUserId(userId))) return "user-notfound";
 
@@ -129,6 +130,7 @@ const updateUserProfile = async (userId, updateInfo) => {
 			if (username) updateInfos.username = username;
 			if (email) updateInfos.email = email;
 			if (phoneNumber) updateInfos.phoneNumber = phoneNumber;
+			if (website) updateInfos.website = website;
 			if (avatar) updateInfos.avatar = avatar;
 
 			if (Object.entries(updateInfos).length !== 0) {

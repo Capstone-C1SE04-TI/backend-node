@@ -4,7 +4,6 @@ const { randomFirestoreDocumentId, comparePassword } = require("../../helpers");
 const { getUsersLength } = require("./admin");
 const { isEqual, result } = require("lodash");
 
-
 const getUserByUsername = async (username) => {
 	let user;
 
@@ -55,6 +54,7 @@ const createNewUser = async ({
 		phoneNumber: phoneNumber,
 		password: hashPassword,
 		avatar: "",
+		website: "",
 		createdDate: currentTimestamp,
 		updatedDate: currentTimestamp,
 	};
@@ -423,7 +423,6 @@ const getListOfSharks = async () => {
 		sharkIds.push(doc.data()["id"]);
 	});
 
-
 	const totalAssets = await getArrayTotalAssets(sharkIds);
 
 	sharks.forEach(async (doc) => {
@@ -431,7 +430,7 @@ const getListOfSharks = async () => {
 		sharksList.push({
 			name: nameShark.slice(nameShark.length - 4),
 			totalAsset: totalAssets.shift(),
-			_24h: '' 
+			_24h: "",
 		});
 	});
 
