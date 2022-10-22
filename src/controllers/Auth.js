@@ -12,6 +12,7 @@ const {
 	checkExistedUsername,
 	checkExistedEmail,
 	getPasswordByUsername,
+	getUserByUsername,
 } = require("../services/crud-database/user");
 
 const TI_AUTH_COOKIE = process.env.TI_AUTH_COOKIE;
@@ -69,6 +70,7 @@ function AuthController() {
 			return res.status(404).json({
 				message: "username-notfound",
 				error: "username-notfound",
+				user: null,
 			});
 		} else {
 			const hashPassword = await getPasswordByUsername(username);
@@ -78,6 +80,7 @@ function AuthController() {
 				hashPassword,
 				async (error, isPasswordMatch) => {
 					if (isPasswordMatch) {
+						const user = await getUserByUsername(username);
 						const cookie = req.cookies[TI_AUTH_COOKIE];
 
 						if (!cookie) {
@@ -93,17 +96,28 @@ function AuthController() {
 							return res.status(200).json({
 								message: "successfully",
 								error: null,
+								user: {
+									username: user.username,
+									userId: user.userId,
+									email: user.email,
+								},
 							});
 						} else {
 							if (await isAuthed(req)) {
 								return res.status(200).json({
 									message: "successfully",
 									error: null,
+									user: {
+										username: user.username,
+										userId: user.userId,
+										email: user.email,
+									},
 								});
 							} else {
 								return res.status(400).json({
 									message: "failed-unauthorized",
 									error: "failed-unauthorized",
+									user: null,
 								});
 							}
 						}
@@ -111,6 +125,7 @@ function AuthController() {
 						return res.status(400).json({
 							message: "incorrect-password",
 							error: "incorrect-password",
+							user: null,
 						});
 					}
 				},

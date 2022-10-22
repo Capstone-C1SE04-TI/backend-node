@@ -59,6 +59,7 @@ const getUserProfile = async (userId) => {
 				email: data.email,
 				phoneNumber: data.phoneNumber,
 				avatar: data.avatar,
+				website: data.website,
 				updatedDate: data.updatedDate,
 				createdDate: data.createdDate,
 			};
@@ -68,6 +69,20 @@ const getUserProfile = async (userId) => {
 	if (Object.entries(userInfo).length === 0) return {};
 
 	return userInfo;
+};
+
+const checkExistedUsernameForUpdateProfile = async (userId, username) => {
+	let isExistedUsername = false;
+
+	const users = await database.collection("users").get();
+
+	users.forEach((doc) => {
+		if (doc.get("username") == username && doc.get("userId") != userId) {
+			isExistedUsername = true;
+		}
+	});
+
+	return isExistedUsername;
 };
 
 const checkExistedEmailForUpdateProfile = async (userId, email) => {
@@ -89,9 +104,15 @@ const updateUserProfile = async (userId, updateInfo) => {
 		if (!userId) {
 			return "userid-required";
 		} else {
-			const { email, phoneNumber, avatar } = updateInfo;
+			const { username, email, phoneNumber, avatar } = updateInfo;
 
 			if (!(await checkExistedUserId(userId))) return "user-notfound";
+
+			if (
+				username &&
+				(await checkExistedUsernameForUpdateProfile(userId, username))
+			)
+				return "username-existed";
 
 			if (
 				email &&
@@ -105,6 +126,7 @@ const updateUserProfile = async (userId, updateInfo) => {
 				.get();
 
 			const updateInfos = {};
+			if (username) updateInfos.username = username;
 			if (email) updateInfos.email = email;
 			if (phoneNumber) updateInfos.phoneNumber = phoneNumber;
 			if (avatar) updateInfos.avatar = avatar;
@@ -129,6 +151,7 @@ module.exports = {
 	getListOfUsers,
 	getUsersLength,
 	getUserProfile,
+	checkExistedUsernameForUpdateProfile,
 	checkExistedEmailForUpdateProfile,
 	updateUserProfile,
 };

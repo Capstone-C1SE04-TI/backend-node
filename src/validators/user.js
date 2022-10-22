@@ -222,6 +222,15 @@ const validateChangePasswordBody = async (req, res, next) => {
 };
 
 const validateUpdateProfileBody = async (req, res, next) => {
+	await body("username")
+		.optional({ checkFalsy: true, nullable: true })
+		.trim()
+		.isLength({ min: 5, max: 16 })
+		.withMessage("username-must-5-16-characters")
+		.matches(/^[a-zA-Z]([0-9a-zA-Z])*$/)
+		.withMessage("username-invalid")
+		.run(req);
+
 	await body("email")
 		.optional({ checkFalsy: true, nullable: true })
 		.trim()
