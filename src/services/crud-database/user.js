@@ -2,6 +2,8 @@ const database = require("../../configs/connect-database");
 const firebase = require("firebase-admin");
 const { randomFirestoreDocumentId, comparePassword } = require("../../helpers");
 const { getUsersLength } = require("./admin");
+const { isEqual, result } = require("lodash");
+
 
 const getUserByUsername = async (username) => {
 	let user;
@@ -318,7 +320,7 @@ const getCoinOrTokenDetails = async (coinSymbol) => {
 	} else {
 		fullInfo = await database
 			.collection("tokens")
-			.where("symbol", "==", coinSymbol)
+			.where("symbol", "==", coinSymbol.toUpperCase())
 			.get();
 
 		fullInfo.forEach((doc) => {
@@ -342,17 +344,20 @@ const getCoinOrTokenDetails = async (coinSymbol) => {
 	return coinInfo;
 };
 
-const getListOfSharks = async () => {
-	let sharksList = [];
-	let sharks = await database.collection("sharks").orderBy("id", "asc").get();
+const getListOfTags = async () => {
+	let tags = [];
+	let tagsList = [];
 
-	sharks.forEach((doc) => {
-		sharksList.push(doc.data());
+	tags = await database.collection("tags").orderBy("id", "asc").get();
+
+	tags.forEach((doc) => {
+		tagsList.push(doc.data());
 	});
 
-	return sharksList;
+	return tagsList;
 };
 
+// Sharks
 const getSharksLength = async () => {
 	let length = 0;
 
@@ -366,17 +371,71 @@ const getSharksLength = async () => {
 	return length || 0;
 };
 
-const getListOfTags = async () => {
-	let tags = [];
-	let tagsList = [];
+const calculateValueOfCoin = async (numberOfCoinsHolding, coinSymbol) => {
+	let price = await getCoinOrTokenDetails(coinSymbol);
+	price = Object.keys(price).length === 0 ? 0 : Number(price["usd"]["price"]);
+	if (typeof numberOfCoinsHolding === "object")
+		numberOfCoinsHolding = Number(numberOfCoinsHolding["$numberLong"]);
+	return Math.floor(price * numberOfCoinsHolding);
+};
 
-	tags = await database.collection("tags").orderBy("id", "asc").get();
+const getTotalAssetOfShark = async (sharkId) => {
+	let rawData = await database
+		.collection("sharks")
+		.where("id", "==", sharkId)
+		.get();
 
-	tags.forEach((doc) => {
-		tagsList.push(doc.data());
+	let totalAsset = 0;
+	rawData.forEach(async (doc) => {
+		let coinsOfShark = doc.data()["coins"];
+		// calculate total asset
+		totalAsset = Object.keys(coinsOfShark).reduce(
+			async (currentValue, coinSymbol) => {
+				let price = await calculateValueOfCoin(
+					coinsOfShark[coinSymbol],
+					coinSymbol,
+				);
+				return (await currentValue) + price;
+			},
+			0,
+		);
 	});
 
-	return tagsList;
+	return totalAsset;
+};
+
+const getArrayTotalAssets = async (sharks) => {
+	let promiseTotalAssets = await sharks.map(async (sharkId) => {
+		let totalAsset = await getTotalAssetOfShark(sharkId);
+		return totalAsset;
+	});
+
+	const totalAssets = await Promise.all(promiseTotalAssets);
+	return totalAssets;
+};
+
+const getListOfSharks = async () => {
+	let sharksList = [];
+	let sharks = await database.collection("sharks").orderBy("id", "asc").get();
+
+	let sharkIds = [];
+	sharks.forEach(async (doc) => {
+		sharkIds.push(doc.data()["id"]);
+	});
+
+
+	const totalAssets = await getArrayTotalAssets(sharkIds);
+
+	sharks.forEach(async (doc) => {
+		let nameShark = doc.data()["walletAddress"];
+		sharksList.push({
+			name: nameShark.slice(nameShark.length - 4),
+			totalAsset: totalAssets.shift(),
+			_24h: '' 
+		});
+	});
+
+	return sharksList;
 };
 
 module.exports = {
