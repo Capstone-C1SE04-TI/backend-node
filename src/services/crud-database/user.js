@@ -3,6 +3,10 @@ const firebase = require("firebase-admin");
 const { randomFirestoreDocumentId, comparePassword } = require("../../helpers");
 const { getUsersLength } = require("./admin");
 const { isEqual, result } = require("lodash");
+const {
+	DEFAULT_USER_AVATAR,
+	DEFAULT_USER_WEBSITE,
+} = require("../../constants");
 
 const getUserByUsername = async (username) => {
 	let user;
@@ -53,8 +57,8 @@ const createNewUser = async ({
 		email: email,
 		phoneNumber: phoneNumber,
 		password: hashPassword,
-		avatar: "",
-		website: "",
+		avatar: DEFAULT_USER_AVATAR,
+		website: DEFAULT_USER_WEBSITE,
 		createdDate: currentTimestamp,
 		updatedDate: currentTimestamp,
 	};
