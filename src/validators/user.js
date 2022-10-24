@@ -222,13 +222,15 @@ const validateChangePasswordBody = async (req, res, next) => {
 };
 
 const validateUpdateProfileBody = async (req, res, next) => {
-	await body("username")
+	await body("fullName")
 		.optional({ checkFalsy: true, nullable: true })
 		.trim()
-		.isLength({ min: 5, max: 16 })
-		.withMessage("username-must-5-16-characters")
-		.matches(/^[a-zA-Z]([0-9a-zA-Z])*$/)
-		.withMessage("username-invalid")
+		.isLength({ min: 4, max: 31 })
+		.withMessage("fullname-must-4-31-characters")
+		.matches(
+			/^[a-zA-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễếệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]{2,}( {1,2}[a-zA-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễếệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]{2,}){1,}$/u,
+		)
+		.withMessage("fullname-invalid")
 		.run(req);
 
 	await body("email")
@@ -262,7 +264,7 @@ const validateUpdateProfileBody = async (req, res, next) => {
 		.optional({ checkFalsy: true, nullable: true })
 		.trim()
 		.matches(
-			/^data:image\/(?:gif|png|jpeg|bmp|webp)(?:;charset=utf-8)?;base64,(?:[A-Za-z0-9]|[+/])+={0,2}/g,
+			/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
 		)
 		.withMessage("avatar-invalid")
 		.run(req);

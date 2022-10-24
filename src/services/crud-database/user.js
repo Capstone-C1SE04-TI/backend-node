@@ -4,6 +4,7 @@ const { randomFirestoreDocumentId, comparePassword } = require("../../helpers");
 const { getUsersLength } = require("./admin");
 const { isEqual, result } = require("lodash");
 const {
+	DEFAULT_USER_FULLNAME,
 	DEFAULT_USER_AVATAR,
 	DEFAULT_USER_WEBSITE,
 } = require("../../constants");
@@ -57,6 +58,7 @@ const createNewUser = async ({
 		email: email,
 		phoneNumber: phoneNumber,
 		password: hashPassword,
+		fullName: DEFAULT_USER_FULLNAME,
 		avatar: DEFAULT_USER_AVATAR,
 		website: DEFAULT_USER_WEBSITE,
 		createdDate: currentTimestamp,
