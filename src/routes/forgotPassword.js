@@ -79,22 +79,18 @@ router.post("/submit-code", forgotPasswordController.submitCode);
  *             type: object
  *             required:
  *               - email
- *               - code
  *             properties:
  *               email:
  *                  type: string
- *               code:
- *                  type: string
  *             example:
  *               email: "hieuhn@gmail.com"
- *               code: "123456"
  *     responses:
  *       200:
  *         description: Resend code successfully
  *       400:
  *         description: Resend code failed
  */
-router.post("/resend-code", forgotPasswordController.resendCode);
+router.post("/resend-code", forgotPasswordController.submitEmail);
 
 /**
  * @swagger

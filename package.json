@@ -27,7 +27,7 @@
 		"express-validator": "^6.14.2",
 		"firebase": "^9.9.4",
 		"firebase-admin": "^11.0.1",
-		"google-auth-library": "^8.5.2",
+		"google-auth-library": "^8.6.0",
 		"jsonwebtoken": "^8.5.1",
 		"lodash": "^4.17.21",
 		"morgan": "^1.10.0",

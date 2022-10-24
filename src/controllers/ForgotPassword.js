@@ -27,6 +27,7 @@ const myOAuth2Client = new OAuth2Client(
 	GOOGLE_MAILER_CLIENT_ID,
 	GOOGLE_MAILER_CLIENT_SECRET,
 );
+
 myOAuth2Client.setCredentials({
 	refresh_token: GOOGLE_MAILER_REFRESH_TOKEN,
 });
@@ -60,12 +61,13 @@ function ForgotPasswordController() {
 						},
 					});
 
+					const confirmationCode = randomConfirmationCode();
 					const mailOptions = {
 						from: {
 							name: "Tracking Investment's Support Team",
 							address: ADMIN_EMAIL_ADDRESS,
 						},
-						to: req.body.email,
+						to: email,
 						subject: "Reset Password - Tracking Investment",
 						html: `
 						<div>
@@ -73,7 +75,7 @@ function ForgotPasswordController() {
 								<h4 style=font-size: 16px">Hi, I'm Hoang Dung from Tracking Investment's Support Team</h4>
 								</br>
 								<h4 style=font-size: 16px">Your reset password code is:</h4>
-								<span style="color: black; font-size: 26px">${randomConfirmationCode()}</span>
+								<span style="color: black; font-size: 26px">${confirmationCode}</span>
 							</div>
 						</div>
 					`,
@@ -81,7 +83,10 @@ function ForgotPasswordController() {
 
 					await transport.sendMail(mailOptions);
 
-					await updateUserConfirmationCode(docId, code);
+					await updateUserConfirmationCode(
+						user.docId,
+						confirmationCode,
+					);
 
 					return res.status(200).json({
 						message: "successfully",
@@ -131,72 +136,6 @@ function ForgotPasswordController() {
 			}
 		} catch (error) {
 			return res.status(400).json({ message: "failed", error: error });
-		}
-	};
-
-	this.resendCode = async (req, res, next) => {
-		const { status, error } = await validateSubmitEmailBody(req, res, next);
-
-		if (status === "failed") {
-			return res.status(400).json({ message: error });
-		} else {
-			const { email } = req.body;
-			const user = await getUserByEmail(email);
-
-			if (user) {
-				try {
-					const myAccessTokenObject =
-						await myOAuth2Client.getAccessToken();
-					const myAccessToken = myAccessTokenObject?.token;
-
-					const transport = nodemailer.createTransport({
-						service: "gmail",
-						auth: {
-							type: "OAuth2",
-							user: ADMIN_EMAIL_ADDRESS,
-							pass: ADMIN_EMAIL_PASSWORD,
-							clientId: GOOGLE_MAILER_CLIENT_ID,
-							clientSecret: GOOGLE_MAILER_CLIENT_SECRET,
-							refreshToken: GOOGLE_MAILER_REFRESH_TOKEN,
-							accessToken: myAccessToken,
-						},
-					});
-
-					const mailOptions = {
-						from: {
-							name: "Tracking Investment's Support Team",
-							address: ADMIN_EMAIL_ADDRESS,
-						},
-						to: req.body.email,
-						subject: "Reset Password - Tracking Investment",
-						html: `
-						<div>
-							<div>
-								<h4 style=font-size: 16px">Hi, I'm Hoang Dung from Tracking Investment's Support Team</h4>
-								</br>
-								<h4 style=font-size: 16px">Your reset password code is:</h4>
-								<span style="color: black; font-size: 26px">${randomConfirmationCode()}</span>
-							</div>
-						</div>
-					`,
-					};
-
-					await transport.sendMail(mailOptions);
-
-					await updateUserConfirmationCode(docId, code);
-
-					return res.status(200).json({
-						message: "successfully",
-					});
-				} catch (error) {
-					console.log(error);
-					return res.status(400).json({
-						message: "failed",
-					});
-				}
-			} else {
-				return res.status(400).json({ message: "email_notfound" });
-			}
 		}
 	};
 
