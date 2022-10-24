@@ -58,6 +58,7 @@ const getUserProfile = async (userId) => {
 				username: data.username,
 				email: data.email,
 				phoneNumber: data.phoneNumber,
+				fullName: data.fullName,
 				avatar: data.avatar,
 				website: data.website,
 				updatedDate: data.updatedDate,
@@ -104,16 +105,10 @@ const updateUserProfile = async (userId, updateInfo) => {
 		if (!userId) {
 			return "userid-required";
 		} else {
-			const { username, email, phoneNumber, website, avatar } =
+			const { fullName, email, phoneNumber, website, avatar } =
 				updateInfo;
 
 			if (!(await checkExistedUserId(userId))) return "user-notfound";
-
-			if (
-				username &&
-				(await checkExistedUsernameForUpdateProfile(userId, username))
-			)
-				return "username-existed";
 
 			if (
 				email &&
@@ -127,7 +122,7 @@ const updateUserProfile = async (userId, updateInfo) => {
 				.get();
 
 			const updateInfos = {};
-			if (username) updateInfos.username = username;
+			if (fullName) updateInfos.fullName = fullName;
 			if (email) updateInfos.email = email;
 			if (phoneNumber) updateInfos.phoneNumber = phoneNumber;
 			if (website) updateInfos.website = website;
