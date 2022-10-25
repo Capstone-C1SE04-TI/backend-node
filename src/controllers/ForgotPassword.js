@@ -1,5 +1,4 @@
 require("dotenv").config();
-const fetch = require("node-fetch");
 const nodemailer = require("nodemailer");
 const { OAuth2Client } = require("google-auth-library");
 
