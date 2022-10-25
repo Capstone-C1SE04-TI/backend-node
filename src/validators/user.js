@@ -109,16 +109,22 @@ const validateSubmitEmailBody = async (req, res, next) => {
 };
 
 const validateSubmitCodeBody = async (req, res, next) => {
+	await body("email")
+		.trim()
+		.notEmpty()
+		.withMessage("email-required")
+		.matches(/.+@.+\..+/)
+		.withMessage("email-invalid")
+		.isLength({ min: 16, max: 40 })
+		.withMessage("email-name-must-6-30-characters")
+		.run(req);
+
 	await body("code")
 		.trim()
 		.notEmpty()
 		.withMessage("code-required")
-		.isNumeric()
-		.isLength({ min: 6, max: 6 })
-		// .matches(/.+@.+\..+/)
+		.matches(/^[0-9]{6}$/)
 		.withMessage("code-invalid")
-		// .isLength({ min: 3, max: 32 })
-		// .withMessage("code-must-6-characters")
 		.run(req);
 
 	const errors = validationResult(req);
