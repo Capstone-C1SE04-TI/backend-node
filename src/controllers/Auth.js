@@ -63,7 +63,9 @@ function AuthController() {
 		// Validate request body
 		const { status, error } = await validateSignInBody(req, res, next);
 		if (status === "failed") {
-			return res.status(400).json({ message: error, error: error });
+			return res
+				.status(400)
+				.json({ message: error, error: error, user: null });
 		}
 
 		if (!(await checkExistedUsername(username))) {

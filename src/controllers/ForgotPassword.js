@@ -37,7 +37,7 @@ function ForgotPasswordController() {
 		const { status, error } = await validateSubmitEmailBody(req, res, next);
 
 		if (status === "failed") {
-			return res.status(400).json({ message: error });
+			return res.status(400).json({ message: error, error: error });
 		} else {
 			const { email } = req.body;
 			const user = await getUserByEmail(email);
@@ -90,15 +90,19 @@ function ForgotPasswordController() {
 
 					return res.status(200).json({
 						message: "successfully",
+						error: null,
 					});
 				} catch (error) {
-					console.log(error);
 					return res.status(400).json({
 						message: "failed",
+						error: error,
 					});
 				}
 			} else {
-				return res.status(400).json({ message: "email_notfound" });
+				return res.status(400).json({
+					message: "email-notfound",
+					error: "email-notfound",
+				});
 			}
 		}
 	};
@@ -112,7 +116,7 @@ function ForgotPasswordController() {
 			);
 
 			if (status === "failed") {
-				return res.status(400).json({ message: error, error: null });
+				return res.status(400).json({ message: error, error: error });
 			} else {
 				const { email, code } = req.body;
 				const user = await getUserByEmail(email);
@@ -124,14 +128,15 @@ function ForgotPasswordController() {
 							.json({ message: "successfully", error: null });
 					} else {
 						return res.status(400).json({
-							message: "failed-wrong-code",
-							error: null,
+							message: "wrong-code",
+							error: "wrong-code",
 						});
 					}
 				} else {
-					return res
-						.status(400)
-						.json({ message: "failed-user-notfound", error: null });
+					return res.status(400).json({
+						message: "user-notfound",
+						error: "user-notfound",
+					});
 				}
 			}
 		} catch (error) {
@@ -147,7 +152,7 @@ function ForgotPasswordController() {
 		);
 
 		if (status === "failed") {
-			return res.status(400).json({ message: error });
+			return res.status(400).json({ message: error, error: error });
 		} else {
 			const { email, password } = req.body;
 			const user = await getUserByEmail(email);
@@ -172,7 +177,7 @@ function ForgotPasswordController() {
 			} else {
 				return res
 					.status(400)
-					.json({ message: "user_notfound", error: "user_notfound" });
+					.json({ message: "user-notfound", error: "user-notfound" });
 			}
 		}
 	};
