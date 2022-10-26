@@ -102,6 +102,25 @@ router.get("/sharks", displayController.getSharks);
 
 /**
  * @swagger
+ * /display/shark/crypto:
+ *   get:
+ *     description: Get list of coin and token of shark
+ *     tags: [Display]
+ *     parameters:
+ *      - in: query
+ *        name: id
+ *        schema:
+ *          type: string
+ *     responses:
+ *       200:
+ *         description: Get list of coin and token of shark successful
+ *       400:
+ *         description: Get list of coin and token of shark successful
+ */
+router.get("/shark/crypto", displayController.getCryptosOfShark);
+
+/**
+ * @swagger
  * /display/tags:
  *   get:
  *     description: Get list of tags

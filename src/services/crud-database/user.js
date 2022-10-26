@@ -8,7 +8,15 @@ const {
 	DEFAULT_USER_AVATAR,
 	DEFAULT_USER_WEBSITE,
 } = require("../../constants");
+const { async } = require("@firebase/util");
 
+// Utilities
+const getValueFromPromise = async (promiseValue) => {
+	const value = await Promise.all(promiseValue);
+	return value;
+};
+
+// Code
 const getUserByUsername = async (username) => {
 	let user;
 
@@ -443,6 +451,49 @@ const getListOfSharks = async () => {
 	return sharksList;
 };
 
+// Crypto of sharks
+
+const getListCryptosOfShark = async (sharkId) => {
+	const rawData = await database
+		.collection("sharks")
+		.where("id", "==", sharkId)
+		.get();
+	//have data
+	if (Object.keys(rawData).length !== 0) {
+		let coins = {};
+		rawData.forEach((doc) => {
+			coins = doc.data()["coins"];
+		});
+
+		const promiseCryptos = await Object.keys(coins).map(
+			async (coinSymbol) => {
+				let coinDetails = await getCoinOrTokenDetails(coinSymbol);
+
+				if (Object.keys(coinDetails).length === 0) return {};
+				else {
+					let quantity = coins[coinSymbol];
+					if (typeof quantity === "object")
+						quantity = Number(quantity["$numberLong"]);
+					return {
+						iconURL: coinDetails["iconURL"],
+						symbol: coinSymbol,
+						name: coinDetails["name"],
+						price: coinDetails["usd"]["price"],
+						quantity: quantity,
+						total: Math.floor(
+							coinDetails["usd"]["price"] * quantity,
+						),
+					};
+				}
+			},
+		);
+
+		const cryptos = await getValueFromPromise(promiseCryptos);
+
+		return cryptos;
+	} else return {};
+};
+
 module.exports = {
 	getUserByUsername,
 	getUserByEmail,
@@ -463,4 +514,5 @@ module.exports = {
 	getListReducingCoinsAndTokens,
 	getListTrendingCoins,
 	getListTrendingTokens,
+	getListCryptosOfShark,
 };

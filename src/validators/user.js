@@ -260,14 +260,14 @@ const validateUpdateProfileBody = async (req, res, next) => {
 		.withMessage("website-invalid")
 		.run(req);
 
-	await body("avatar")
-		.optional({ checkFalsy: true, nullable: true })
-		.trim()
-		.matches(
-			/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
-		)
-		.withMessage("avatar-invalid")
-		.run(req);
+	// await body("avatar")
+	// 	.optional({ checkFalsy: true, nullable: true })
+	// 	.trim()
+	// 	.matches(
+	// 		/^data:image\/(?:gif|png|jpeg|bmp|webp)(?:;charset=utf-8)?;base64,(?:[A-Za-z0-9]|[+/])+={0,2}/g,
+	// 	)
+	// 	.withMessage("avatar-invalid")
+	// 	.run(req);
 
 	const errors = validationResult(req);
 

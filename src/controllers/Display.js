@@ -7,6 +7,7 @@ const {
 	getListTrendingCoins,
 	getListTrendingTokens,
 	getCoinOrTokenDetails,
+	getListCryptosOfShark,
 } = require("../services/crud-database/user");
 
 function DisplayController() {
@@ -185,9 +186,47 @@ function DisplayController() {
 			.catch((error) => {
 				return res.status(400).json({
 					message: "failed",
-					error: error,
+					error: error ? error : "error-message",
 					datasLength: 0,
 					datas: [],
+				});
+			});
+	};
+
+	this.getCryptosOfShark = async (req, res, next) => {
+		if (!req.query.id) {
+			sharkId = null;
+		} else {
+			const idCheck = _.toNumber(req.query.id);
+			if (_.isNaN(idCheck)) {
+				sharkId = undefined;
+			} else {
+				sharkId = idCheck;
+				console.log(sharkId, idCheck);
+			}
+		}
+
+		await getListCryptosOfShark(sharkId)
+			.then((data) => {
+				if (Object.entries(data).length === 0) {
+					return res.status(400).json({
+						message: "failed-getCrytosList-invalid",
+						error: "sharkId-invalid",
+						data: {},
+					});
+				} else {
+					return res.status(200).json({
+						message: "successfully",
+						error: null,
+						data: data,
+					});
+				}
+			})
+			.catch((error) => {
+				return res.status(400).json({
+					message: "failed",
+					error: error,
+					datas: {},
 				});
 			});
 	};
