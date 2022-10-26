@@ -27,8 +27,6 @@ const validateSignUpBody = async (req, res, next) => {
 		.withMessage("phonenumber-required")
 		.matches(/^\d{10}$/)
 		.withMessage("phonenumber-invalid")
-		.isLength({ min: 10, max: 10 })
-		.withMessage("phonenumber-must-10-integer-characters")
 		.run(req);
 
 	await body("password")
@@ -253,8 +251,6 @@ const validateUpdateProfileBody = async (req, res, next) => {
 		.trim()
 		.matches(/^\d{10}$/)
 		.withMessage("phonenumber-invalid")
-		.isLength({ min: 10, max: 10 })
-		.withMessage("phonenumber-must-10-integer-characters")
 		.run(req);
 
 	await body("website")
