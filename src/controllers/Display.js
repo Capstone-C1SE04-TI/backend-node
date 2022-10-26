@@ -186,7 +186,7 @@ function DisplayController() {
 			.catch((error) => {
 				return res.status(400).json({
 					message: "failed",
-					error: error ? error : "error-message",
+					error: error,
 					datasLength: 0,
 					datas: [],
 				});
