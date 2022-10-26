@@ -109,7 +109,7 @@ function AuthController() {
 								return res.status(200).json({
 									message: "successfully",
 									error: null,
-									user: {
+									user: { 
 										username: user.username,
 										userId: user.userId,
 										email: user.email,
