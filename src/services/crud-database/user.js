@@ -19,7 +19,6 @@ const getValueFromPromise = async (promiseValue) => {
 	return value;
 };
 
-// Code
 const getUserByUsername = async (username) => {
 	let user;
 
@@ -58,13 +57,14 @@ const createNewUser = async ({
 	hashPassword,
 }) => {
 	const usersLength = await getUsersLength();
-	const userId = usersLength ? usersLength + 1 : 1;
+	const id = usersLength ? usersLength + 1 : 1;
 
 	const currentTimestamp = firebase.firestore.Timestamp.now();
 	const docId = randomFirestoreDocumentId();
 
 	const newUserInfo = {
-		userId: userId,
+		id: id,
+		userId: id,
 		username: username,
 		email: email,
 		phoneNumber: phoneNumber,
@@ -500,14 +500,14 @@ const getListTransactionsOfShark = async (sharkId) => {
 	if (!_.isNumber(sharkId)) return -1;
 	const rawData = await database
 		.collection("sharks")
-		.where("id", "==", sharkId) 
+		.where("id", "==", sharkId)
 		.get();
 	let transactions = -1;
 	rawData.forEach((doc) => {
 		console.log(doc);
 		transactions = doc.data()["transactionsHistory"];
 	});
-	return  transactions;
+	return transactions;
 };
 
 module.exports = {

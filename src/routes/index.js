@@ -3,15 +3,18 @@ const forgotPasswordRouter = require("./forgotPassword");
 const changePasswordRouter = require("./changePassword");
 const userRouter = require("./user");
 const displayRouter = require("./display");
-const sitesRouter = require("./sites");
+const adminRouter = require("./admin");
 
 function routing(app) {
+	// User routes
 	app.use("/auth", authRouter);
 	app.use("/forgot-password", forgotPasswordRouter);
 	app.use("/change-password", changePasswordRouter);
 	app.use("/display", displayRouter);
 	app.use("/user", userRouter);
-	app.use("/", sitesRouter);
+
+	// Admin routes
+	app.use("/admin", adminRouter);
 }
 
 module.exports = routing;

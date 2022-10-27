@@ -144,6 +144,50 @@ const updateUserProfile = async (userId, updateInfo) => {
 	}
 };
 
+const checkExistedUsername = async (username) => {
+	let isExistedUsername = false;
+
+	const admins = await database.collection("admins").get();
+
+	admins.forEach((doc) => {
+		if (doc.get("username") === username) {
+			isExistedUsername = true;
+		}
+	});
+
+	return isExistedUsername;
+};
+
+const getPasswordByUsername = async (username) => {
+	let password;
+
+	const admins = await database
+		.collection("admins")
+		.where("username", "==", username)
+		.get();
+
+	admins.forEach((doc) => {
+		password = doc.get("password");
+	});
+
+	return password;
+};
+
+const getAdminByUsername = async (username) => {
+	let user;
+
+	const admins = await database
+		.collection("admins")
+		.where("username", "==", username)
+		.get();
+
+	admins.forEach((doc) => {
+		user = doc.data();
+	});
+
+	return user;
+};
+
 module.exports = {
 	getListOfUsers,
 	getUsersLength,
@@ -151,4 +195,7 @@ module.exports = {
 	checkExistedUsernameForUpdateProfile,
 	checkExistedEmailForUpdateProfile,
 	updateUserProfile,
+	checkExistedUsername,
+	getPasswordByUsername,
+	getAdminByUsername,
 };
