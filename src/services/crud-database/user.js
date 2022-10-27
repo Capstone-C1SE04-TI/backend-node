@@ -3,6 +3,8 @@ const firebase = require("firebase-admin");
 const { randomFirestoreDocumentId, comparePassword } = require("../../helpers");
 const { getUsersLength } = require("./admin");
 const { isEqual, result } = require("lodash");
+const _ = require("lodash");
+
 const {
 	DEFAULT_USER_FULLNAME,
 	DEFAULT_USER_AVATAR,
@@ -456,6 +458,8 @@ const getListOfSharks = async () => {
 // Crypto of sharks
 
 const getListCryptosOfShark = async (sharkId) => {
+	if(!_.isNumber(sharkId)) return -1;
+
 	const rawData = await database
 		.collection("sharks")
 		.where("id", "==", sharkId)
@@ -493,11 +497,12 @@ const getListCryptosOfShark = async (sharkId) => {
 		const cryptos = await getValueFromPromise(promiseCryptos);
 
 		return cryptos;
-	} else return {};
+	} else return -1;
 };
 
 // Transaction history
 const getListTransactionsOfShark = async (sharkId) => {
+	if(!_.isNumber(sharkId)) return -1;
 	const rawData = await database
 		.collection("sharks")
 		.where("id", "==", sharkId)
@@ -511,7 +516,7 @@ const getListTransactionsOfShark = async (sharkId) => {
 		return transactions;
 	}
 	else
-		return null;
+		return -1;
 };
 
 module.exports = {

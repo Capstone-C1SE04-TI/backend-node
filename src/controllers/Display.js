@@ -241,13 +241,11 @@ function DisplayController() {
 				sharkId = undefined;
 			} else {
 				sharkId = idCheck;
-				console.log(sharkId, idCheck);
 			}
 		}
-
 		await getListTransactionsOfShark(sharkId)
 			.then((data) => {
-				if (!Array.isArray(data)) {
+				if (!_.isArray(data)) {
 					return res.status(400).json({
 						message: "failed-getTransactionsList-invalid",
 						error: "sharkId-invalid",
@@ -265,7 +263,7 @@ function DisplayController() {
 				return res.status(400).json({
 					message: "failed",
 					error: error,
-					datas: {},
+					datas: [],
 				});
 			});
 	};
