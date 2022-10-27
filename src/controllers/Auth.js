@@ -1,12 +1,10 @@
 const dotenv = require("dotenv");
 dotenv.config();
 
-const { cryptPassword, comparePassword } = require("../helpers");
 const {
 	validateSignUpBody,
 	validateSignInBody,
 } = require("../validators/user");
-const { isAuthed, generateAccessToken } = require("../services/authentication");
 const {
 	createNewUser,
 	checkExistedUsername,
@@ -14,6 +12,8 @@ const {
 	getPasswordByUsername,
 	getUserByUsername,
 } = require("../services/crud-database/user");
+const { cryptPassword, comparePassword } = require("../helpers");
+const { isAuthed, generateAccessToken } = require("../services/authentication");
 
 const TI_AUTH_COOKIE = process.env.TI_AUTH_COOKIE;
 
@@ -106,7 +106,7 @@ function AuthController() {
 								return res.status(200).json({
 									message: "successfully",
 									error: null,
-									user: { 
+									user: {
 										username: user.username,
 										userId: user.userId,
 										email: user.email,

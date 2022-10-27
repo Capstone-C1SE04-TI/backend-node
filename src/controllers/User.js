@@ -9,8 +9,8 @@ const { validateUpdateProfileBody } = require("../validators/user");
 function UserController() {
 	this.getUsersList = async (req, res, next) => {
 		await getListOfUsers()
-			.then((usersList) => {
-				if (usersList.length == 0) {
+			.then((datas) => {
+				if (datas.length == 0) {
 					return res.status(400).json({
 						message: "failed-empty-data",
 						error: "empty-data",
@@ -21,8 +21,8 @@ function UserController() {
 					return res.status(200).json({
 						message: "successfully",
 						error: null,
-						datasLength: usersList.length,
-						datas: usersList,
+						datasLength: datas.length,
+						datas: datas,
 					});
 				}
 			})
