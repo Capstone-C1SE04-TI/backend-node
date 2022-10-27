@@ -203,13 +203,12 @@ function DisplayController() {
 				sharkId = undefined;
 			} else {
 				sharkId = idCheck;
-				console.log(sharkId, idCheck);
 			}
 		}
 
 		await getListCryptosOfShark(sharkId)
 			.then((data) => {
-				if (Object.entries(data).length === 0) {
+				if (data === -1) {
 					return res.status(400).json({
 						message: "failed-getCrytosList-invalid",
 						error: "sharkId-invalid",

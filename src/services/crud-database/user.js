@@ -458,65 +458,56 @@ const getListOfSharks = async () => {
 // Crypto of sharks
 
 const getListCryptosOfShark = async (sharkId) => {
-	if(!_.isNumber(sharkId)) return -1;
+	if (!_.isNumber(sharkId)) return -1;
 
 	const rawData = await database
 		.collection("sharks")
 		.where("id", "==", sharkId)
 		.get();
 	//have data
-	if (Object.keys(rawData).length !== 0) {
-		let coins = {};
-		rawData.forEach((doc) => {
-			coins = doc.data()["coins"];
-		});
 
-		const promiseCryptos = await Object.keys(coins).map(
-			async (coinSymbol) => {
-				let coinDetails = await getCoinOrTokenDetails(coinSymbol);
+	let coins = {};
+	rawData.forEach((doc) => {
+		coins = doc.data()["coins"];
+	});
 
-				if (Object.keys(coinDetails).length === 0) return {};
-				else {
-					let quantity = coins[coinSymbol];
-					if (typeof quantity === "object")
-						quantity = Number(quantity["$numberLong"]);
-					return {
-						iconURL: coinDetails["iconURL"],
-						symbol: coinSymbol,
-						name: coinDetails["name"],
-						price: coinDetails["usd"]["price"],
-						quantity: quantity,
-						total: Math.floor(
-							coinDetails["usd"]["price"] * quantity,
-						),
-					};
-				}
-			},
-		);
+	const promiseCryptos = await Object.keys(coins).map(async (coinSymbol) => {
+		let coinDetails = await getCoinOrTokenDetails(coinSymbol);
 
-		const cryptos = await getValueFromPromise(promiseCryptos);
+		if (Object.keys(coinDetails).length === 0) return {};
+		else {
+			let quantity = coins[coinSymbol];
+			if (typeof quantity === "object")
+				quantity = Number(quantity["$numberLong"]);
+			return {
+				iconURL: coinDetails["iconURL"],
+				symbol: coinSymbol,
+				name: coinDetails["name"],
+				price: coinDetails["usd"]["price"],
+				quantity: quantity,
+				total: Math.floor(coinDetails["usd"]["price"] * quantity),
+			};
+		}
+	});
 
-		return cryptos;
-	} else return -1;
+	const cryptos = await getValueFromPromise(promiseCryptos);
+
+	return cryptos.length !== 0 ? cryptos : -1;
 };
 
 // Transaction history
 const getListTransactionsOfShark = async (sharkId) => {
-	if(!_.isNumber(sharkId)) return -1;
+	if (!_.isNumber(sharkId)) return -1;
 	const rawData = await database
 		.collection("sharks")
-		.where("id", "==", sharkId)
+		.where("id", "==", sharkId) 
 		.get();
-
-	if(Object.keys(rawData).length !== 0){
-		let transactions = [];
-		rawData.forEach((doc) =>{
-			transactions = doc.data()['transactionsHistory'];
-		})
-		return transactions;
-	}
-	else
-		return -1;
+	let transactions = -1;
+	rawData.forEach((doc) => {
+		console.log(doc);
+		transactions = doc.data()["transactionsHistory"];
+	});
+	return  transactions;
 };
 
 module.exports = {
@@ -540,5 +531,5 @@ module.exports = {
 	getListTrendingCoins,
 	getListTrendingTokens,
 	getListCryptosOfShark,
-	getListTransactionsOfShark
+	getListTransactionsOfShark,
 };
