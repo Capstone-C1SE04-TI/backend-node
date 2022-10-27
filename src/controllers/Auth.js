@@ -20,9 +20,8 @@ const TI_AUTH_COOKIE = process.env.TI_AUTH_COOKIE;
 function AuthController() {
 	this.signup = async (req, res, next) => {
 		const { username, email, phoneNumber, password } = req.body;
-
-		// Validate request body
 		const { status, error } = await validateSignUpBody(req, res, next);
+
 		if (status === "failed") {
 			return res.status(400).json({ message: error, error: error });
 		}
@@ -39,7 +38,6 @@ function AuthController() {
 				.json({ message: "email-existed", error: "email-existed" });
 		}
 
-		// Encode password and create new user in DB
 		cryptPassword(password, async (error, hashPassword) => {
 			await createNewUser({ username, email, phoneNumber, hashPassword })
 				.then(() => {
@@ -59,9 +57,8 @@ function AuthController() {
 
 	this.signin = async (req, res, next) => {
 		const { username, password } = req.body;
-
-		// Validate request body
 		const { status, error } = await validateSignInBody(req, res, next);
+
 		if (status === "failed") {
 			return res
 				.status(400)

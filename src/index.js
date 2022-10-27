@@ -34,7 +34,7 @@ const swaggerOptions = {
 		"src/routes/coinDetails.js",
 		"src/routes/display.js",
 		"src/routes/user.js",
-		"src/routes/sites.js",
+		"src/routes/admin.js",
 	],
 };
 const swaggerSpecs = swaggerJsDoc(swaggerOptions);
