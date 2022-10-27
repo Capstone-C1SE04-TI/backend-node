@@ -9,6 +9,7 @@ const {
 	DEFAULT_USER_WEBSITE,
 } = require("../../constants");
 const { async } = require("@firebase/util");
+const { raw } = require("express");
 
 // Utilities
 const getValueFromPromise = async (promiseValue) => {
@@ -442,7 +443,8 @@ const getListOfSharks = async () => {
 	sharks.forEach(async (doc) => {
 		let nameShark = doc.data()["walletAddress"];
 		sharksList.push({
-			name: nameShark.slice(nameShark.length - 4),
+			id: doc.data()["id"],
+			name: nameShark,
 			totalAsset: totalAssets.shift(),
 			_24h: "",
 		});
@@ -494,6 +496,24 @@ const getListCryptosOfShark = async (sharkId) => {
 	} else return {};
 };
 
+// Transaction history
+const getListTransactionsOfShark = async (sharkId) => {
+	const rawData = await database
+		.collection("sharks")
+		.where("id", "==", sharkId)
+		.get();
+
+	if(Object.keys(rawData).length !== 0){
+		let transactions = [];
+		rawData.forEach((doc) =>{
+			transactions = doc.data()['transactionsHistory'];
+		})
+		return transactions;
+	}
+	else
+		return [];
+};
+
 module.exports = {
 	getUserByUsername,
 	getUserByEmail,
@@ -515,4 +535,5 @@ module.exports = {
 	getListTrendingCoins,
 	getListTrendingTokens,
 	getListCryptosOfShark,
+	getListTransactionsOfShark
 };

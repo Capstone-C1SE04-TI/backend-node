@@ -115,9 +115,28 @@ router.get("/sharks", displayController.getSharks);
  *       200:
  *         description: Get list of coin and token of shark successful
  *       400:
- *         description: Get list of coin and token of shark successful
+ *         description: Get list of coin and token of shark failed
  */
 router.get("/shark/crypto", displayController.getCryptosOfShark);
+
+/**
+ * @swagger
+ * /display/shark/transaction-history:
+ *   get:
+ *     description: Get the transaction history of shark
+ *     tags: [Display]
+ *     parameters:
+ *      - in: query
+ *        name: id
+ *        schema:
+ *          type: string
+ *     responses:
+ *       200:
+ *         description: Get transaction history of shark successful
+ *       400:
+ *         description: Get transaction history of shark failed
+ */
+ router.get("/shark/transaction-history", displayController.getTransactionsOfShark);
 
 /**
  * @swagger
