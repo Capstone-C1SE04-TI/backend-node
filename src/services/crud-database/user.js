@@ -3,12 +3,15 @@ const firebase = require("firebase-admin");
 const { randomFirestoreDocumentId, comparePassword } = require("../../helpers");
 const { getUsersLength } = require("./admin");
 const { isEqual, result } = require("lodash");
+const _ = require("lodash");
+
 const {
 	DEFAULT_USER_FULLNAME,
 	DEFAULT_USER_AVATAR,
 	DEFAULT_USER_WEBSITE,
 } = require("../../constants");
 const { async } = require("@firebase/util");
+const { raw } = require("express");
 
 // Utilities
 const getValueFromPromise = async (promiseValue) => {
@@ -442,7 +445,8 @@ const getListOfSharks = async () => {
 	sharks.forEach(async (doc) => {
 		let nameShark = doc.data()["walletAddress"];
 		sharksList.push({
-			name: nameShark.slice(nameShark.length - 4),
+			id: doc.data()["id"],
+			name: nameShark,
 			totalAsset: totalAssets.shift(),
 			_24h: "",
 		});
@@ -454,44 +458,56 @@ const getListOfSharks = async () => {
 // Crypto of sharks
 
 const getListCryptosOfShark = async (sharkId) => {
+	if (!_.isNumber(sharkId)) return -1;
+
 	const rawData = await database
 		.collection("sharks")
 		.where("id", "==", sharkId)
 		.get();
 	//have data
-	if (Object.keys(rawData).length !== 0) {
-		let coins = {};
-		rawData.forEach((doc) => {
-			coins = doc.data()["coins"];
-		});
 
-		const promiseCryptos = await Object.keys(coins).map(
-			async (coinSymbol) => {
-				let coinDetails = await getCoinOrTokenDetails(coinSymbol);
+	let coins = {};
+	rawData.forEach((doc) => {
+		coins = doc.data()["coins"];
+	});
 
-				if (Object.keys(coinDetails).length === 0) return {};
-				else {
-					let quantity = coins[coinSymbol];
-					if (typeof quantity === "object")
-						quantity = Number(quantity["$numberLong"]);
-					return {
-						iconURL: coinDetails["iconURL"],
-						symbol: coinSymbol,
-						name: coinDetails["name"],
-						price: coinDetails["usd"]["price"],
-						quantity: quantity,
-						total: Math.floor(
-							coinDetails["usd"]["price"] * quantity,
-						),
-					};
-				}
-			},
-		);
+	const promiseCryptos = await Object.keys(coins).map(async (coinSymbol) => {
+		let coinDetails = await getCoinOrTokenDetails(coinSymbol);
 
-		const cryptos = await getValueFromPromise(promiseCryptos);
+		if (Object.keys(coinDetails).length === 0) return {};
+		else {
+			let quantity = coins[coinSymbol];
+			if (typeof quantity === "object")
+				quantity = Number(quantity["$numberLong"]);
+			return {
+				iconURL: coinDetails["iconURL"],
+				symbol: coinSymbol,
+				name: coinDetails["name"],
+				price: coinDetails["usd"]["price"],
+				quantity: quantity,
+				total: Math.floor(coinDetails["usd"]["price"] * quantity),
+			};
+		}
+	});
 
-		return cryptos;
-	} else return {};
+	const cryptos = await getValueFromPromise(promiseCryptos);
+
+	return cryptos.length !== 0 ? cryptos : -1;
+};
+
+// Transaction history
+const getListTransactionsOfShark = async (sharkId) => {
+	if (!_.isNumber(sharkId)) return -1;
+	const rawData = await database
+		.collection("sharks")
+		.where("id", "==", sharkId) 
+		.get();
+	let transactions = -1;
+	rawData.forEach((doc) => {
+		console.log(doc);
+		transactions = doc.data()["transactionsHistory"];
+	});
+	return  transactions;
 };
 
 module.exports = {
@@ -515,4 +531,5 @@ module.exports = {
 	getListTrendingCoins,
 	getListTrendingTokens,
 	getListCryptosOfShark,
+	getListTransactionsOfShark,
 };
