@@ -38,4 +38,18 @@ const adminController = require("../controllers/Admin");
  */
 router.post("/signin", adminController.signin);
 
+/**
+ * @swagger
+ * /admin/signout:
+ *   post:
+ *     description: Sign Out
+ *     tags: [Admin]
+ *     responses:
+ *       200:
+ *         description: Sign out successfully
+ *       400:
+ *         description: Sign out failed
+ */
+router.post("/signout", adminController.signout);
+
 module.exports = router;
