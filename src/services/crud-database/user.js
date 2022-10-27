@@ -511,7 +511,7 @@ const getListTransactionsOfShark = async (sharkId) => {
 		return transactions;
 	}
 	else
-		return [];
+		return null;
 };
 
 module.exports = {

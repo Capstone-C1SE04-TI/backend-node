@@ -247,7 +247,7 @@ function DisplayController() {
 
 		await getListTransactionsOfShark(sharkId)
 			.then((data) => {
-				if (Object.entries(data).length === 0) {
+				if (!Array.isArray(data)) {
 					return res.status(400).json({
 						message: "failed-getTransactionsList-invalid",
 						error: "sharkId-invalid",
