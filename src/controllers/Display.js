@@ -213,7 +213,7 @@ function DisplayController() {
 					return res.status(400).json({
 						message: "failed-getCrytosList-invalid",
 						error: "sharkId-invalid",
-						data: {},
+						data: [],
 					});
 				} else {
 					return res.status(200).json({
@@ -227,7 +227,7 @@ function DisplayController() {
 				return res.status(400).json({
 					message: "failed",
 					error: error,
-					datas: {},
+					datas: [],
 				});
 			});
 	};
@@ -249,7 +249,7 @@ function DisplayController() {
 					return res.status(400).json({
 						message: "failed-getTransactionsList-invalid",
 						error: "sharkId-invalid",
-						data: {},
+						data: [],
 					});
 				} else {
 					return res.status(200).json({
