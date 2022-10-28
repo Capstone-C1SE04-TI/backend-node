@@ -480,11 +480,12 @@ const getListCryptosOfShark = async (sharkId) => {
 			if (typeof quantity === "object")
 				quantity = Number(quantity["$numberLong"]);
 			return {
-				iconURL: coinDetails["iconURL"],
 				symbol: coinSymbol,
-				name: coinDetails["name"],
-				price: coinDetails["usd"]["price"],
 				quantity: quantity,
+				name: coinDetails["name"],
+				cmcRank: coinDetails["cmcRank"],
+				iconURL: coinDetails["iconURL"],
+				price: coinDetails["usd"]["price"],
 				total: Math.floor(coinDetails["usd"]["price"] * quantity),
 			};
 		}

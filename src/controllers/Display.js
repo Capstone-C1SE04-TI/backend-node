@@ -195,10 +195,12 @@ function DisplayController() {
 	};
 
 	this.getCryptosOfShark = async (req, res, next) => {
-		if (!req.query.id) {
+		let sharkId;
+
+		if (!req.query.sharkId) {
 			sharkId = null;
 		} else {
-			const idCheck = _.toNumber(req.query.id);
+			const idCheck = _.toNumber(req.query.sharkId);
 			if (_.isNaN(idCheck)) {
 				sharkId = undefined;
 			} else {
@@ -210,8 +212,8 @@ function DisplayController() {
 			.then((data) => {
 				if (data === -1) {
 					return res.status(400).json({
-						message: "failed-getCrytosList-invalid",
-						error: "sharkId-invalid",
+						message: "failed-sharkid-invalid",
+						error: "sharkid-invalid",
 						data: [],
 					});
 				} else {
