@@ -445,8 +445,8 @@ const getListOfSharks = async () => {
 	sharks.forEach(async (doc) => {
 		sharksList.push({
 			id: doc.data()["id"],
-			name: doc.data()["walletAddress"],
 			percent24h: doc.data()["percent24h"],
+			walletAddress: doc.data()["walletAddress"],
 			totalAsset: totalAssets.shift(),
 		});
 	});
