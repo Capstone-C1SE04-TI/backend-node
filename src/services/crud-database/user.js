@@ -446,8 +446,8 @@ const getListOfSharks = async () => {
 		sharksList.push({
 			id: doc.data()["id"],
 			name: doc.data()["walletAddress"],
+			percent24h: doc.data()["percent24h"],
 			totalAsset: totalAssets.shift(),
-			percent24h: "",
 		});
 	});
 
