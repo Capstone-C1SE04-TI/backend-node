@@ -1,8 +1,9 @@
 const database = require("../../configs/connect-database");
 const firebase = require("firebase-admin");
-const { randomFirestoreDocumentId, comparePassword } = require("../../helpers");
 const { getUsersLength } = require("./admin");
 const { isEqual, result } = require("lodash");
+const { async } = require("@firebase/util");
+const { raw } = require("express");
 const _ = require("lodash");
 
 const {
@@ -10,8 +11,7 @@ const {
 	DEFAULT_USER_AVATAR,
 	DEFAULT_USER_WEBSITE,
 } = require("../../constants");
-const { async } = require("@firebase/util");
-const { raw } = require("express");
+const { randomFirestoreDocumentId, comparePassword } = require("../../helpers");
 
 // Utilities
 const getValueFromPromise = async (promiseValue) => {
@@ -456,7 +456,6 @@ const getListOfSharks = async () => {
 };
 
 // Crypto of sharks
-
 const getListCryptosOfShark = async (sharkId) => {
 	if (!_.isNumber(sharkId)) return -1;
 
