@@ -464,7 +464,6 @@ const getListCryptosOfShark = async (sharkId) => {
 		.collection("sharks")
 		.where("id", "==", sharkId)
 		.get();
-	//have data
 
 	let coins = {};
 	rawData.forEach((doc) => {
@@ -483,6 +482,7 @@ const getListCryptosOfShark = async (sharkId) => {
 				symbol: coinSymbol,
 				quantity: quantity,
 				name: coinDetails["name"],
+				tagNames: coinDetails["tagNames"],
 				cmcRank: coinDetails["cmcRank"],
 				iconURL: coinDetails["iconURL"],
 				price: coinDetails["usd"]["price"],
