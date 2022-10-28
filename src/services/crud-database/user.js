@@ -443,12 +443,11 @@ const getListOfSharks = async () => {
 	const totalAssets = await getArrayTotalAssets(sharkIds);
 
 	sharks.forEach(async (doc) => {
-		let nameShark = doc.data()["walletAddress"];
 		sharksList.push({
 			id: doc.data()["id"],
-			name: nameShark,
+			name: doc.data()["walletAddress"],
 			totalAsset: totalAssets.shift(),
-			_24h: "",
+			percent24h: "",
 		});
 	});
 
