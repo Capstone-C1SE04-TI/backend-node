@@ -1,6 +1,10 @@
 const database = require("../../configs/connect-database");
 const firebase = require("firebase-admin");
-const { randomFirestoreDocumentId, comparePassword } = require("../../helpers");
+const {
+	randomFirestoreDocumentId,
+	comparePassword,
+	convertUnixTimestampToNumber,
+} = require("../../helpers");
 const { getUsersLength } = require("./admin");
 const { isEqual, result } = require("lodash");
 const _ = require("lodash");
@@ -19,6 +23,21 @@ const getValueFromPromise = async (promiseValue) => {
 	return value;
 };
 
+const getHoursPriceOfToken = async (tokenSymbol) => {
+	const rawData = await database
+		.collection("tokens")
+		.where("symbol", "==", tokenSymbol.toUpperCase())
+		.get();
+
+	let hoursPrice = {};
+	rawData.forEach((doc) => {
+		hoursPrice = doc.data()["originalPrices"]["hourly"];
+	});
+
+	return hoursPrice;
+};
+
+// --------------------------------------
 const getUserByUsername = async (username) => {
 	let user;
 
@@ -485,7 +504,8 @@ const getListCryptosOfShark = async (sharkId) => {
 				name: coinDetails["name"],
 				price: coinDetails["usd"]["price"],
 				quantity: quantity,
-				total: Math.floor(coinDetails["usd"]["price"] * quantity),
+				value: Math.floor(coinDetails["usd"]["price"] * quantity),
+				tagNames: coinDetails["tagNames"],
 			};
 		}
 	});
@@ -504,9 +524,34 @@ const getListTransactionsOfShark = async (sharkId) => {
 		.get();
 	let transactions = -1;
 	rawData.forEach((doc) => {
-		console.log(doc);
-		transactions = doc.data()["transactionsHistory"];
+		transactions = doc
+			.data()
+			["transactionsHistory"].map(async (transaction) => {
+				let numberOfTokens =
+					transaction["value"] /
+					Math.pow(10, transaction["tokenDecimal"]);
+				let hoursPrice = await getHoursPriceOfToken("shib");
+				console.log(hoursPrice);
+				hoursPrice = Object.keys(hoursPrice).map((unixDate) =>{
+					console.log(hoursPrice.unixDate);
+					let date = convertUnixTimestampToNumber(unixDate / 1000);
+					return{
+						date: date,
+						value: hoursPrice['unixDate']
+					}
+				})
+				return {
+					date: transaction["timeStamp"],
+					from: transaction["from"],
+					to: transaction["to"],
+					numberOfTokens: numberOfTokens,
+					price: hoursPrice,
+				};
+			});
 	});
+
+	transactions = await getValueFromPromise(transactions);
+
 	return transactions;
 };
 
