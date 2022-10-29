@@ -516,6 +516,52 @@ const getListCryptosOfShark = async (sharkId) => {
 };
 
 // Transaction history
+const getDateNearTransaction = (dateList, dateTransaction) => {
+	let datePricesTokenCut = dateList.map((date) => {
+		return date["date"].slice(0, 10);
+	});
+	let dateTransactionCut = dateTransaction.slice(0, 10);
+	let positionDate = null;
+	// Cut hour
+	let dateCutByHours = datePricesTokenCut.filter((date, index) => {
+		if (Number(date) === Number(dateTransactionCut)) positionDate = index;
+		return Number(date) === Number(dateTransactionCut);
+	});
+
+	if (dateCutByHours.length > 0) {
+		// date transaction before date change price
+		if (Number(dateTransaction) < Number(dateList[positionDate]))
+			return positionDate === dateList.length - 1
+				? dateList[dateList.length - 1]
+				: dateList[positionDate + 1];
+		else return dateList[positionDate];
+	}
+
+	// cut date
+	let dateCutByDates = datePricesTokenCut.filter((date, index) => {
+		date = date.slice(0, 8);
+		if (Number(date) === Number(dateTransactionCut.slice(0, 8)))
+			positionDate = index;
+		return Number(date) === Number(dateTransactionCut.slice(0, 8));
+	});
+
+	let hourTrade = dateTransactionCut.slice(8);
+	let datesCutLength = dateCutByDates.length;
+	for (let i = 0; i < datesCutLength; i++) {
+		if (Number(hourTrade) > Number(dateCutByDates[i].slice(8)))
+			return dateList[positionDate - datesCutLength + i + 1];
+	}
+
+	return positionDate === null
+		? {
+				date: "none",
+				value: 0,
+		  }
+		: positionDate === dateList.length - 1
+		? dateList[dateList.length - 1]
+		: dateList[positionDate + 1];
+};
+
 const getListTransactionsOfShark = async (sharkId) => {
 	if (!_.isNumber(sharkId)) return -1;
 	const rawData = await database
@@ -530,22 +576,43 @@ const getListTransactionsOfShark = async (sharkId) => {
 				let numberOfTokens =
 					transaction["value"] /
 					Math.pow(10, transaction["tokenDecimal"]);
-				let hoursPrice = await getHoursPriceOfToken("shib");
-				// console.log(hoursPrice);
-				hoursPrice = Object.keys(hoursPrice).map((unixDate) =>{
-					console.log(hoursPrice.unixDate);
+				let hoursPrice = await getHoursPriceOfToken(
+					transaction["tokenSymbol"],
+				);
+				hoursPrice = Object.keys(hoursPrice).map((unixDate) => {
 					let date = convertUnixTimestampToNumber(unixDate / 1000);
-					return{
+					date = date.toString();
+					return {
 						date: date,
-						value: hoursPrice['unixDate']
-					}
-				})
+						value: hoursPrice[unixDate],
+					};
+				});
+
+				hoursPrice.sort(
+					(firstObj, secondObj) =>
+						secondObj["date"] - firstObj["date"],
+				);
+
+				let presentPrice = hoursPrice[0];
+
+				const dateNearTransaction = getDateNearTransaction(
+					hoursPrice,
+					transaction["timeStamp"],
+				);
+
+				presentPrice =
+					typeof presentPrice === "undefined"
+						? 0
+						: presentPrice["value"];
+
 				return {
 					date: transaction["timeStamp"],
 					from: transaction["from"],
 					to: transaction["to"],
 					numberOfTokens: numberOfTokens,
-					price: hoursPrice,
+					symbol: transaction["tokenSymbol"],
+					pastPrice: dateNearTransaction["value"],
+					presentPrice: presentPrice
 				};
 			});
 	});
