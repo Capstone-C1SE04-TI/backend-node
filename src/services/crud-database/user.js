@@ -531,7 +531,7 @@ const getListTransactionsOfShark = async (sharkId) => {
 					transaction["value"] /
 					Math.pow(10, transaction["tokenDecimal"]);
 				let hoursPrice = await getHoursPriceOfToken("shib");
-				console.log(hoursPrice);
+				// console.log(hoursPrice);
 				hoursPrice = Object.keys(hoursPrice).map((unixDate) =>{
 					console.log(hoursPrice.unixDate);
 					let date = convertUnixTimestampToNumber(unixDate / 1000);

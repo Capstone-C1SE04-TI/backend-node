@@ -108,7 +108,7 @@ router.get("/sharks", displayController.getSharks);
  *     tags: [Display]
  *     parameters:
  *      - in: query
- *        name: id
+ *        name: sharkId
  *        schema:
  *          type: string
  *     responses:
