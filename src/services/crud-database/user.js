@@ -345,17 +345,34 @@ const getCoinOrTokenDetails = async (coinSymbol) => {
 			.get();
 
 		fullInfo.forEach((doc) => {
-			coinInfo = doc.data();
+			const data = doc.data();
 
-			coinInfo.prices =
-				coinInfo["id"] >= 1 && coinInfo["id"] <= 10
-					? {
-							day: Object.entries(coinInfo["prices"]["day"]),
-							week: Object.entries(coinInfo["prices"]["week"]),
-							month: Object.entries(coinInfo["prices"]["month"]),
-							year: Object.entries(coinInfo["prices"]["year"]),
-					  }
-					: null;
+			coinInfo = {
+				id: data.id,
+				ethId: data.ethId,
+				name: data.name,
+				type: data.type,
+				symbol: data.symbol,
+				iconURL: data.iconURL,
+				cmcRank: data.cmcRank,
+				tagNames: data.tagNames,
+				maxSupply: data.maxSupply,
+				totalSupply: data.totalSupply,
+				circulatingSupply: data.circulatingSupply,
+				contractAddress: data.contractAddress,
+				marketCap: data.marketCap,
+				urls: data.urls,
+				usd: data.usd,
+				prices:
+					data.id >= 1 && data.id <= 10
+						? {
+								day: Object.entries(data.prices.day),
+								week: Object.entries(data.prices.week),
+								month: Object.entries(data.prices.month),
+								year: Object.entries(data.prices.year),
+						  }
+						: null,
+			};
 		});
 	}
 
