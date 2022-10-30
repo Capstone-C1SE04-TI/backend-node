@@ -250,12 +250,14 @@ function DisplayController() {
 					return res.status(400).json({
 						message: "failed-getTransactionsList-invalid",
 						error: "sharkId-invalid",
+						dataLength: 0,
 						data: [],
 					});
 				} else {
 					return res.status(200).json({
 						message: "successfully",
 						error: null,
+						dataLength: data.length,
 						data: data,
 					});
 				}
@@ -264,6 +266,7 @@ function DisplayController() {
 				return res.status(400).json({
 					message: "failed",
 					error: error,
+					dataLength: 0,
 					datas: [],
 				});
 			});

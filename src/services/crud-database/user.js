@@ -579,26 +579,38 @@ const getListTransactionsOfShark = async (sharkId) => {
 				let hoursPrice = await getHoursPriceOfToken(
 					transaction["tokenSymbol"],
 				);
-				hoursPrice = Object.keys(hoursPrice).map((unixDate) => {
-					let date = convertUnixTimestampToNumber(unixDate / 1000);
-					date = date.toString();
-					return {
-						date: date,
-						value: hoursPrice[unixDate],
-					};
-				});
+				
+				// found hourly price
+				if (typeof hoursPrice !== "undefined") {
+					hoursPrice = Object.keys(hoursPrice).map((unixDate) => {
+						let date = convertUnixTimestampToNumber(
+							unixDate / 1000,
+						);
+						date = date.toString();
+						return {
+							date: date,
+							value: hoursPrice[unixDate],
+						};
+					});
 
-				hoursPrice.sort(
-					(firstObj, secondObj) =>
-						secondObj["date"] - firstObj["date"],
-				);
+					hoursPrice.sort(
+						(firstObj, secondObj) =>
+							secondObj["date"] - firstObj["date"],
+					);
+				}
 
-				let presentPrice = hoursPrice[0];
+				let presentPrice =
+					typeof hoursPrice !== "undefined"
+						? hoursPrice[0]
+						: undefined;
 
-				const dateNearTransaction = getDateNearTransaction(
-					hoursPrice,
-					transaction["timeStamp"],
-				);
+				const dateNearTransaction =
+					typeof hoursPrice !== "undefined"
+						? getDateNearTransaction(
+								hoursPrice,
+								transaction["timeStamp"],
+						  )
+						: { date: "none", value: 0 };
 
 				presentPrice =
 					typeof presentPrice === "undefined"
@@ -612,7 +624,7 @@ const getListTransactionsOfShark = async (sharkId) => {
 					numberOfTokens: numberOfTokens,
 					symbol: transaction["tokenSymbol"],
 					pastPrice: dateNearTransaction["value"],
-					presentPrice: presentPrice
+					presentPrice: presentPrice,
 				};
 			});
 	});
