@@ -245,18 +245,20 @@ function DisplayController() {
 			}
 		}
 		await getListTransactionsOfShark(sharkId)
-			.then((data) => {
-				if (!_.isArray(data)) {
+			.then((datas) => {
+				if (!_.isArray(datas)) {
 					return res.status(400).json({
-						message: "failed-getTransactionsList-invalid",
-						error: "sharkId-invalid",
-						data: [],
+						message: "failed-sharkid-invalid",
+						error: "sharkid-invalid",
+						datas: [],
+						datasLength: 0,
 					});
 				} else {
 					return res.status(200).json({
 						message: "successfully",
 						error: null,
-						data: data,
+						datas: datas,
+						datasLength: datas.length,
 					});
 				}
 			})
@@ -265,6 +267,7 @@ function DisplayController() {
 					message: "failed",
 					error: error,
 					datas: [],
+					datasLength: 0,
 				});
 			});
 	};
