@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const displayController = require("../controllers/Display");
+const { isAuth } = require("../middlewares/authentication");
 
 /**
  * @swagger
@@ -98,6 +99,7 @@ router.get("/coin/details", displayController.getCoinOrTokenDetails);
  *       400:
  *         description: Get list of sharks failed
  */
+// router.get("/sharks", isAuth, displayController.getSharks);
 router.get("/sharks", displayController.getSharks);
 
 /**
@@ -136,7 +138,10 @@ router.get("/shark/crypto", displayController.getCryptosOfShark);
  *       400:
  *         description: Get transaction history of shark failed
  */
- router.get("/shark/transaction-history", displayController.getTransactionsOfShark);
+router.get(
+	"/shark/transaction-history",
+	displayController.getTransactionsOfShark,
+);
 
 /**
  * @swagger
