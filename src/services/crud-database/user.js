@@ -620,15 +620,15 @@ const getListTransactionsOfShark = async (sharkId) => {
 						? 0
 						: presentPrice["value"];
 
-				return {
-					date: transaction["timeStamp"],
-					from: transaction["from"],
-					to: transaction["to"],
+				let calculatePrice = {
 					numberOfTokens: numberOfTokens,
-					symbol: transaction["tokenSymbol"],
 					pastPrice: dateNearTransaction["value"],
 					presentPrice: presentPrice,
-				};
+				}
+
+				Object.assign(transaction, calculatePrice)
+				
+				return transaction;
 			});
 	});
 
