@@ -209,18 +209,20 @@ function DisplayController() {
 		}
 
 		await getListCryptosOfShark(sharkId)
-			.then((data) => {
-				if (data === -1) {
+			.then((datas) => {
+				if (datas === -1) {
 					return res.status(400).json({
 						message: "failed-sharkid-invalid",
 						error: "sharkid-invalid",
-						data: [],
+						datas: [],
+						datasLength: 0,
 					});
 				} else {
 					return res.status(200).json({
 						message: "successfully",
 						error: null,
-						data: data,
+						datas: datas,
+						datasLength: datas.length,
 					});
 				}
 			})
@@ -229,6 +231,7 @@ function DisplayController() {
 					message: "failed",
 					error: error,
 					datas: [],
+					datasLength: 0,
 				});
 			});
 	};
