@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const forgotPasswordController = require("../controllers/ForgotPassword");
+const { isAuth } = require("../middlewares/authentication");
 
 /**
  * @swagger

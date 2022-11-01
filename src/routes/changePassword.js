@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const changePasswordController = require("../controllers/ChangePassword");
+const { isAuth } = require("../middlewares/authentication");
 
 /**
  * @swagger
@@ -44,6 +45,6 @@ const changePasswordController = require("../controllers/ChangePassword");
  *       400:
  *         description: Change password failed
  */
-router.post("/", changePasswordController.changePassword);
+router.post("/", isAuth, changePasswordController.changePassword);
 
 module.exports = router;

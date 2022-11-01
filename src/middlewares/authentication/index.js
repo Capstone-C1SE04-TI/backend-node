@@ -10,10 +10,10 @@ const requireSignIn = expressjwt({
 	userProperty: "auth",
 });
 
-const isAuth = (req, res, next) => {
+const isAuth = async (req, res, next) => {
 	try {
-		if (!isAuthed(req, res, next)) {
-			res.status(403).json({
+		if (!(await isAuthed(req, res, next))) {
+			return res.status(403).json({
 				message: "access-denied",
 				error: "access-denied",
 			});
@@ -21,7 +21,7 @@ const isAuth = (req, res, next) => {
 
 		next();
 	} catch (e) {
-		res.status(403).json({
+		return res.status(403).json({
 			message: "access-denied",
 			error: "access-denied",
 		});
@@ -29,15 +29,22 @@ const isAuth = (req, res, next) => {
 };
 
 const isAdmin = (req, res, next) => {
-	// Role: User - 1, Admin - 2
-	if (req.profile.role === 2) {
+	try {
+		// Role: "user" - "admin"
+		if (req.profile.role !== "admin") {
+			return res.status(403).json({
+				message: "access-denied admin-resource",
+				error: "access-denied admin-resource",
+			});
+		}
+
+		next();
+	} catch (e) {
 		return res.status(403).json({
 			message: "access-denied admin-resource",
 			error: "access-denied admin-resource",
 		});
 	}
-
-	next();
 };
 
 module.exports = {
