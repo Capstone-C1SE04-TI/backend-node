@@ -63,7 +63,6 @@ function AuthController() {
 			return res.status(400).json({
 				message: error,
 				error: error,
-				role: "user",
 				user: null,
 			});
 		}
@@ -72,7 +71,6 @@ function AuthController() {
 			return res.status(404).json({
 				message: "username-notfound",
 				error: "username-notfound",
-				role: "user",
 				user: null,
 			});
 		} else {
@@ -99,8 +97,8 @@ function AuthController() {
 							return res.status(200).json({
 								message: "successfully",
 								error: null,
-								role: "user",
 								user: {
+									role: "user",
 									username: user.username,
 									userId: user.userId,
 									email: user.email,
@@ -111,8 +109,8 @@ function AuthController() {
 								return res.status(200).json({
 									message: "successfully",
 									error: null,
-									role: "user",
 									user: {
+										role: "user",
 										username: user.username,
 										userId: user.userId,
 										email: user.email,
@@ -122,7 +120,6 @@ function AuthController() {
 								return res.status(400).json({
 									message: "failed-unauthorized",
 									error: "failed-unauthorized",
-									role: "user",
 									user: null,
 								});
 							}
@@ -131,7 +128,6 @@ function AuthController() {
 						return res.status(400).json({
 							message: "incorrect-password",
 							error: "incorrect-password",
-							role: "user",
 							user: null,
 						});
 					}

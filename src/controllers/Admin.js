@@ -17,8 +17,7 @@ function AdminController() {
 			return res.status(400).json({
 				message: error,
 				error: error,
-				role: "admin",
-				admin: null,
+				user: null,
 			});
 		}
 
@@ -26,8 +25,7 @@ function AdminController() {
 			return res.status(404).json({
 				message: "username-notfound",
 				error: "username-notfound",
-				role: "admin",
-				admin: null,
+				user: null,
 			});
 		} else {
 			const hashPassword = await getPasswordByUsername(username);
@@ -42,8 +40,8 @@ function AdminController() {
 						return res.status(200).json({
 							message: "successfully",
 							error: null,
-							role: "admin",
-							admin: {
+							user: {
+								role: "admin",
 								username: admin.username,
 								email: admin.email,
 							},
@@ -52,8 +50,7 @@ function AdminController() {
 						return res.status(400).json({
 							message: "incorrect-password",
 							error: "incorrect-password",
-							role: "admin",
-							admin: null,
+							user: null,
 						});
 					}
 				},
