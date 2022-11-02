@@ -187,6 +187,23 @@ const getAdminByUsername = async (username) => {
 	return user;
 };
 
+const deleteUserById = async (userId) => {
+	let rawDataUser = await database
+		.collection("users")
+		.where("id", "==", userId)
+		.get();
+
+	let isDeleted = false;
+
+	rawDataUser.forEach((doc) => {
+		isDeleted = true;
+		doc.ref.delete()
+	})
+
+	return isDeleted;
+
+};
+
 module.exports = {
 	getListOfUsers,
 	getUsersLength,
@@ -197,4 +214,5 @@ module.exports = {
 	checkExistedUsername,
 	getPasswordByUsername,
 	getAdminByUsername,
+	deleteUserById
 };

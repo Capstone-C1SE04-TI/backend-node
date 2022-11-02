@@ -88,35 +88,4 @@ router.post("/profile/update", userController.updateUserProfile);
  */
 router.get("/profile", userController.getUserProfile);
 
-/**
- * @swagger
- * /user/delete:
- *   post:
- *     description: Delete user 
- *     tags: [User]
- *     parameters:
- *      - in: query
- *        name: userId
- *        schema:
- *          type: string
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - id
- *             properties:
- *               id:
- *                  type: string
- *             example:
- *               id: "10"
- *     responses:
- *       200:
- *         description: Delete user successfully
- *       400:
- *         description: Delete user failed
- */
- router.post("/delete", userController.updateUserProfile);
-
 module.exports = router;

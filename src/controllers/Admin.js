@@ -3,6 +3,7 @@ const {
 	checkExistedUsername,
 	getPasswordByUsername,
 	getAdminByUsername,
+	deleteUserById,
 } = require("../services/crud-database/admin");
 const { validateSignInBody } = require("../validators/admin");
 const { comparePassword } = require("../helpers");
@@ -58,6 +59,33 @@ function AdminController() {
 		try {
 			req.user = null;
 			req.session = null;
+
+			return res
+				.status(200)
+				.json({ message: "successfully", error: null });
+		} catch (error) {
+			return res.status(400).json({ message: "failed", error: error });
+		}
+	};
+
+	this.deleteUser = async (req, res, next) => {
+		try {
+			const { id } = req.body;
+
+			let checkedId = Number(id);
+			if (!_.isNumber(checkedId) || _.isNaN(checkedId))
+				return res.status(404).json({
+					message: "id-notfound",
+					error: "id-notfound",
+				});
+
+			const isDeletedSuccessful = await deleteUserById(checkedId);
+
+			if (!isDeletedSuccessful)
+				return res.status(404).json({
+					message: "id-notfound",
+					error: "id-notfound",
+				});
 
 			return res
 				.status(200)
