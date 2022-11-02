@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const displayController = require("../controllers/Display");
-const { isAuth } = require("../middlewares/authentication");
 
 /**
  * @swagger
@@ -23,7 +22,6 @@ const { isAuth } = require("../middlewares/authentication");
  */
 router.get(
 	"/coins-and-tokens/reducing",
-	isAuth,
 	displayController.getReducingCoinsAndTokens,
 );
 
@@ -39,11 +37,7 @@ router.get(
  *       400:
  *         description: Get list of coins failed
  */
-router.get(
-	"/coins-and-tokens/all",
-	isAuth,
-	displayController.getCoinsAndTokens,
-);
+router.get("/coins-and-tokens/all", displayController.getCoinsAndTokens);
 
 /**
  * @swagger
@@ -57,7 +51,7 @@ router.get(
  *       400:
  *         description: Get top 10 trending coins failed
  */
-router.get("/coins/trending", isAuth, displayController.getTrendingCoins);
+router.get("/coins/trending", displayController.getTrendingCoins);
 
 /**
  * @swagger
@@ -71,7 +65,7 @@ router.get("/coins/trending", isAuth, displayController.getTrendingCoins);
  *       400:
  *         description: Get top 10 trending tokens failed
  */
-router.get("/tokens/trending", isAuth, displayController.getTrendingTokens);
+router.get("/tokens/trending", displayController.getTrendingTokens);
 
 /**
  * @swagger
@@ -90,7 +84,7 @@ router.get("/tokens/trending", isAuth, displayController.getTrendingTokens);
  *       400:
  *         description: Get coin or token details failed
  */
-router.get("/coin/details", isAuth, displayController.getCoinOrTokenDetails);
+router.get("/coin/details", displayController.getCoinOrTokenDetails);
 
 /**
  * @swagger
@@ -104,7 +98,7 @@ router.get("/coin/details", isAuth, displayController.getCoinOrTokenDetails);
  *       400:
  *         description: Get list of sharks failed
  */
-router.get("/sharks", isAuth, displayController.getSharks);
+router.get("/sharks", displayController.getSharks);
 
 /**
  * @swagger
@@ -123,7 +117,7 @@ router.get("/sharks", isAuth, displayController.getSharks);
  *       400:
  *         description: Get list of coin and token of shark failed
  */
-router.get("/shark/crypto", isAuth, displayController.getCryptosOfShark);
+router.get("/shark/crypto", displayController.getCryptosOfShark);
 
 /**
  * @swagger
@@ -144,7 +138,6 @@ router.get("/shark/crypto", isAuth, displayController.getCryptosOfShark);
  */
 router.get(
 	"/shark/transaction-history",
-	isAuth,
 	displayController.getTransactionsOfShark,
 );
 
@@ -160,6 +153,6 @@ router.get(
  *       400:
  *         description: Get list of tags failed
  */
-router.get("/tags", isAuth, displayController.getTags);
+router.get("/tags", displayController.getTags);
 
 module.exports = router;

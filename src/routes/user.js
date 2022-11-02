@@ -11,20 +11,6 @@ const { isAuth } = require("../middlewares/authentication");
 
 /**
  * @swagger
- * /user/list:
- *   get:
- *     description: Get list of users
- *     tags: [User]
- *     responses:
- *       200:
- *         description: Get list of users successfully
- *       400:
- *         description: Get list of users failed
- */
-router.get("/list", isAuth, userController.getUsersList);
-
-/**
- * @swagger
  * /user/profile/update:
  *   post:
  *     description: Update user profile

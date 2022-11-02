@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const adminController = require("../controllers/Admin");
+const { isAdmin, isAuth } = require("../middlewares/authentication");
 
 /**
  * @swagger
@@ -51,5 +52,19 @@ router.post("/signin", adminController.signin);
  *         description: Sign out failed
  */
 router.post("/signout", adminController.signout);
+
+/**
+ * @swagger
+ * /admin/user/list:
+ *   get:
+ *     description: Get list of users
+ *     tags: [Admin]
+ *     responses:
+ *       200:
+ *         description: Get list of users successfully
+ *       400:
+ *         description: Get list of users failed
+ */
+router.get("/user/list", isAdmin, adminController.getUsersList);
 
 module.exports = router;
