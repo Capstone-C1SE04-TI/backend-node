@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const adminController = require("../controllers/Admin");
-const { isAdmin, isAuth } = require("../middlewares/authentication");
+const { isAdmin } = require("../middlewares/authentication");
 
 /**
  * @swagger
@@ -51,14 +51,13 @@ router.post("/signin", adminController.signin);
  *       400:
  *         description: Sign out failed
  */
- router.post("/signout", adminController.signout);
-
+router.post("/signout", adminController.signout);
 
 /**
  * @swagger
  * /admin/delete-user:
  *   post:
- *     description: Delete user 
+ *     description: Delete user
  *     tags: [Admin]
  *     requestBody:
  *       content:
@@ -78,8 +77,7 @@ router.post("/signin", adminController.signin);
  *       400:
  *         description: Delete user failed
  */
- router.post("/delete-user", adminController.deleteUser);
-
+router.post("/delete-user", adminController.deleteUser);
 
 /**
  * @swagger
@@ -93,6 +91,25 @@ router.post("/signin", adminController.signin);
  *       400:
  *         description: Get list of users failed
  */
-router.get("/user/list", isAdmin, adminController.getUsersList);
+router.get("/user/list", adminController.getUsersList);
+
+/**
+ * @swagger
+ * /admin/user/details:
+ *   get:
+ *     description: Get detail user
+ *     tags: [Admin]
+ *     parameters:
+ *      - in: query
+ *        name: userId
+ *        schema:
+ *          type: string
+ *     responses:
+ *       200:
+ *         description: Get detail user successfully
+ *       400:
+ *         description: Get detail user failed
+ */
+router.get("/user/details", adminController.getUserDetail);
 
 module.exports = router;

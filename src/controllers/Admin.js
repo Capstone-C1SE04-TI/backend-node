@@ -5,6 +5,7 @@ const {
 	getAdminByUsername,
 	deleteUserById,
 	getListOfUsers,
+	getUserDetail
 } = require("../services/crud-database/admin");
 const { validateSignInBody } = require("../validators/admin");
 const { comparePassword } = require("../helpers");
@@ -124,6 +125,46 @@ function AdminController() {
 					error: error,
 					datasLength: 0,
 					datas: [],
+				});
+			});
+	};
+
+	this.getUserDetail = async (req, res, next) => {
+		let userId;
+
+		if (!req.query.userId) {
+			userId = null;
+		} else {
+			const userIdCheck = _.toString(req.query.userId);
+
+			if (_.isNaN(userIdCheck)) {
+				userId = undefined;
+			} else {
+				userId = Number(userIdCheck);
+			}
+		}
+
+		await getUserDetail(userId)
+			.then((data) => {
+				if (Object.entries(data).length === 0) {
+					return res.status(400).json({
+						message: "failed-userid-invalid",
+						error: "userid-invalid",
+						data: {},
+					});
+				} else {
+					return res.status(200).json({
+						message: "successfully",
+						error: null,
+						data: data,
+					});
+				}
+			})
+			.catch((error) => {
+				return res.status(400).json({
+					message: "failed",
+					error: error,
+					data: {},
 				});
 			});
 	};

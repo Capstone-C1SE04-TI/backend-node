@@ -212,11 +212,42 @@ const deleteUserById = async (userId) => {
 
 	rawDataUser.forEach((doc) => {
 		isDeleted = true;
-		doc.ref.delete()
-	})
+		doc.ref.delete();
+	});
 
 	return isDeleted;
+};
 
+const getUserDetail = async (userId) => {
+	let userInfo = {};
+
+	if (!userId) {
+		return {};
+	} else {
+		const users = await database
+			.collection("users")
+			.where("userId", "==", userId)
+			.get();
+
+		users.forEach((doc) => {
+			const data = doc.data();
+			userInfo = {
+				userId: data.userId,
+				username: data.username,
+				email: data.email,
+				phoneNumber: data.phoneNumber,
+				fullName: data.fullName,
+				avatar: data.avatar,
+				website: data.website,
+				updatedDate: data.updatedDate,
+				createdDate: data.createdDate,
+			};
+		});
+	}
+
+	if (Object.entries(userInfo).length === 0) return {};
+
+	return userInfo;
 };
 
 module.exports = {
@@ -229,5 +260,6 @@ module.exports = {
 	checkExistedUsername,
 	getPasswordByUsername,
 	getAdminByUsername,
-	deleteUserById
+	deleteUserById,
+	getUserDetail,
 };
