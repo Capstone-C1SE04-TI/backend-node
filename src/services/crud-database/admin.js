@@ -67,7 +67,6 @@ const getUserProfile = async (userId) => {
 
 		users.forEach((doc) => {
 			const data = doc.data();
-
 			userInfo = {
 				userId: data.userId,
 				username: data.username,
@@ -203,6 +202,23 @@ const getAdminByUsername = async (username) => {
 	return user;
 };
 
+const deleteUserById = async (userId) => {
+	let rawDataUser = await database
+		.collection("users")
+		.where("id", "==", userId)
+		.get();
+
+	let isDeleted = false;
+
+	rawDataUser.forEach((doc) => {
+		isDeleted = true;
+		doc.ref.delete()
+	})
+
+	return isDeleted;
+
+};
+
 module.exports = {
 	getListOfUsers,
 	getUsersLength,
@@ -213,4 +229,5 @@ module.exports = {
 	checkExistedUsername,
 	getPasswordByUsername,
 	getAdminByUsername,
+	deleteUserById
 };

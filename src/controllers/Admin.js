@@ -3,6 +3,7 @@ const {
 	checkExistedUsername,
 	getPasswordByUsername,
 	getAdminByUsername,
+	deleteUserById,
 	getListOfUsers,
 } = require("../services/crud-database/admin");
 const { validateSignInBody } = require("../validators/admin");
@@ -71,33 +72,59 @@ function AdminController() {
 		}
 	};
 
-	this.getUsersList = async (req, res, next) => {
-		await getListOfUsers()
-			.then((datas) => {
-				if (datas.length == 0) {
+	this.deleteUser = async (req, res, next) => {
+		try {
+			const { id } = req.body;
+
+			let checkedId = Number(id);
+			if (!_.isNumber(checkedId) || _.isNaN(checkedId))
+				return res.status(404).json({
+					message: "id-notfound",
+					error: "id-notfound",
+				});
+
+			const isDeletedSuccessful = await deleteUserById(checkedId);
+
+			if (!isDeletedSuccessful)
+				return res.status(404).json({
+					message: "id-notfound",
+					error: "id-notfound",
+				});
+
+			return res
+				.status(200)
+				.json({ message: "successfully", error: null });
+		} catch (error) {
+			return res.status(400).json({ message: "failed", error: error });
+		}
+		this.getUsersList = async (req, res, next) => {
+			await getListOfUsers()
+				.then((datas) => {
+					if (datas.length == 0) {
+						return res.status(400).json({
+							message: "failed-empty-data",
+							error: "empty-data",
+							datasLength: 0,
+							datas: [],
+						});
+					} else {
+						return res.status(200).json({
+							message: "successfully",
+							error: null,
+							datasLength: datas.length,
+							datas: datas,
+						});
+					}
+				})
+				.catch((error) => {
 					return res.status(400).json({
-						message: "failed-empty-data",
-						error: "empty-data",
+						message: "failed",
+						error: error,
 						datasLength: 0,
 						datas: [],
 					});
-				} else {
-					return res.status(200).json({
-						message: "successfully",
-						error: null,
-						datasLength: datas.length,
-						datas: datas,
-					});
-				}
-			})
-			.catch((error) => {
-				return res.status(400).json({
-					message: "failed",
-					error: error,
-					datasLength: 0,
-					datas: [],
 				});
-			});
+		};
 	};
 }
 
