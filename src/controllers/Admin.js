@@ -97,34 +97,35 @@ function AdminController() {
 		} catch (error) {
 			return res.status(400).json({ message: "failed", error: error });
 		}
-		this.getUsersList = async (req, res, next) => {
-			await getListOfUsers()
-				.then((datas) => {
-					if (datas.length == 0) {
-						return res.status(400).json({
-							message: "failed-empty-data",
-							error: "empty-data",
-							datasLength: 0,
-							datas: [],
-						});
-					} else {
-						return res.status(200).json({
-							message: "successfully",
-							error: null,
-							datasLength: datas.length,
-							datas: datas,
-						});
-					}
-				})
-				.catch((error) => {
+	};
+
+	this.getUsersList = async (req, res, next) => {
+		await getListOfUsers()
+			.then((datas) => {
+				if (datas.length == 0) {
 					return res.status(400).json({
-						message: "failed",
-						error: error,
+						message: "failed-empty-data",
+						error: "empty-data",
 						datasLength: 0,
 						datas: [],
 					});
+				} else {
+					return res.status(200).json({
+						message: "successfully",
+						error: null,
+						datasLength: datas.length,
+						datas: datas,
+					});
+				}
+			})
+			.catch((error) => {
+				return res.status(400).json({
+					message: "failed",
+					error: error,
+					datasLength: 0,
+					datas: [],
 				});
-		};
+			});
 	};
 }
 
