@@ -17,10 +17,25 @@ const checkExistedUserId = async (userId) => {
 
 const getListOfUsers = async () => {
 	let usersList = [];
+	let userInfo = {};
 	let users = await database.collection("users").orderBy("id", "asc").get();
 
 	users.forEach((doc) => {
-		usersList.push(doc.data());
+		const data = doc.data();
+
+		userInfo = {
+			userId: data.userId,
+			username: data.username,
+			email: data.email,
+			phoneNumber: data.phoneNumber,
+			fullName: data.fullName,
+			avatar: data.avatar,
+			website: data.website,
+			updatedDate: data.updatedDate,
+			createdDate: data.createdDate,
+		};
+
+		usersList.push(userInfo);
 	});
 
 	return usersList;

@@ -136,7 +136,10 @@ router.get("/shark/crypto", displayController.getCryptosOfShark);
  *       400:
  *         description: Get transaction history of shark failed
  */
- router.get("/shark/transaction-history", displayController.getTransactionsOfShark);
+router.get(
+	"/shark/transaction-history",
+	displayController.getTransactionsOfShark,
+);
 
 /**
  * @swagger

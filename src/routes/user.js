@@ -1,26 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/User");
+const { isAuth } = require("../middlewares/authentication");
 
 /**
  * @swagger
  * tags:
  *   name: User
  */
-
-/**
- * @swagger
- * /user/list:
- *   get:
- *     description: Get list of users
- *     tags: [User]
- *     responses:
- *       200:
- *         description: Get list of users successfully
- *       400:
- *         description: Get list of users failed
- */
-router.get("/list", userController.getUsersList);
 
 /**
  * @swagger
@@ -67,7 +54,7 @@ router.get("/list", userController.getUsersList);
  *       400:
  *         description: Update user profile failed
  */
-router.post("/profile/update", userController.updateUserProfile);
+router.post("/profile/update", isAuth, userController.updateUserProfile);
 
 /**
  * @swagger
@@ -86,6 +73,6 @@ router.post("/profile/update", userController.updateUserProfile);
  *       400:
  *         description: Get user profile failed
  */
-router.get("/profile", userController.getUserProfile);
+router.get("/profile", isAuth, userController.getUserProfile);
 
 module.exports = router;
