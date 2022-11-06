@@ -1,7 +1,7 @@
 const database = require("../../configs/connect-database");
 const firebase = require("firebase-admin");
 const { getUsersLength } = require("./admin");
-const { isEqual, result } = require("lodash");
+const { isEqual, result, initial } = require("lodash");
 const { async } = require("@firebase/util");
 const { raw } = require("express");
 const _ = require("lodash");
@@ -417,38 +417,17 @@ const calculateValueOfCoin = async (numberOfCoinsHolding, coinSymbol) => {
 	return Math.floor(price * numberOfCoinsHolding);
 };
 
-const getTotalAssetOfShark = async (sharkId) => {
-	let rawData = await database
-		.collection("sharks")
-		.where("id", "==", sharkId)
-		.get();
-
-	let totalAsset = 0;
-	rawData.forEach(async (doc) => {
-		let coinsOfShark = doc.data()["coins"];
-		// calculate total asset
-		totalAsset = Object.keys(coinsOfShark).reduce(
-			async (currentValue, coinSymbol) => {
-				let price = await calculateValueOfCoin(
-					coinsOfShark[coinSymbol],
-					coinSymbol,
-				);
-				return (await currentValue) + price;
-			},
-			0,
-		);
-	});
-
-	return totalAsset;
-};
-
 const getArrayTotalAssets = async (sharks) => {
 	let promiseTotalAssets = await sharks.map(async (sharkId) => {
-		let totalAsset = await getTotalAssetOfShark(sharkId);
+		let totalAsset = await getListCryptosOfShark(sharkId);
+		totalAsset = totalAsset.reduce((initialVal, value) =>{
+			return initialVal + value.total
+		}, 0)
 		return totalAsset;
 	});
 
-	const totalAssets = await Promise.all(promiseTotalAssets);
+	const totalAssets = await Promise.allSettled(promiseTotalAssets)
+
 	return totalAssets;
 };
 
