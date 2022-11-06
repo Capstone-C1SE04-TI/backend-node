@@ -76,6 +76,7 @@ const createNewUser = async ({
 		fullName: DEFAULT_USER_FULLNAME,
 		avatar: DEFAULT_USER_AVATAR,
 		website: DEFAULT_USER_WEBSITE,
+		premiumAccount: false,
 		createdDate: currentTimestamp,
 		updatedDate: currentTimestamp,
 	};
@@ -624,10 +625,10 @@ const getListTransactionsOfShark = async (sharkId) => {
 					numberOfTokens: numberOfTokens,
 					pastPrice: dateNearTransaction["value"],
 					presentPrice: presentPrice,
-				}
+				};
 
-				Object.assign(transaction, calculatePrice)
-				
+				Object.assign(transaction, calculatePrice);
+
 				return transaction;
 			});
 	});
