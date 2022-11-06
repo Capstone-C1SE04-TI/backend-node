@@ -599,7 +599,7 @@ const getListTransactionsOfShark = async (sharkId) => {
 					);
 				}
 
-				let presentPrice =
+				let presentData =
 					typeof hoursPrice !== "undefined"
 						? hoursPrice[0]
 						: undefined;
@@ -612,10 +612,15 @@ const getListTransactionsOfShark = async (sharkId) => {
 						  )
 						: { date: "none", value: 0 };
 
-				presentPrice =
-					typeof presentPrice === "undefined"
+				let presentPrice =
+					typeof presentData === "undefined"
 						? 0
-						: presentPrice["value"];
+						: presentData["value"];
+
+				let presentDate =
+						typeof presentData === "undefined"
+							? 0
+							: presentData["date"];
 
 				return {
 					date: transaction["timeStamp"],
@@ -623,7 +628,9 @@ const getListTransactionsOfShark = async (sharkId) => {
 					to: transaction["to"],
 					numberOfTokens: numberOfTokens,
 					symbol: transaction["tokenSymbol"],
+					pastDate: dateNearTransaction['date'],
 					pastPrice: dateNearTransaction["value"],
+					presentDate: presentDate,
 					presentPrice: presentPrice,
 				};
 			});
