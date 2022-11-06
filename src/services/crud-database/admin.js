@@ -158,6 +158,29 @@ const updateUserProfile = async (userId, updateInfo) => {
 	}
 };
 
+const upgradeUserPremiumAccount = async (userId) => {
+	try {
+		if (userId === null) return "userid-required";
+
+		if (userId === undefined) return "userid-invalid";
+
+		if (!(await checkExistedUserId(userId))) return "user-notfound";
+
+		const users = await database
+			.collection("users")
+			.where("userId", "==", userId)
+			.get();
+
+		users.forEach((doc) => {
+			doc.ref.update({ premiumAccount: true });
+		});
+
+		return "success";
+	} catch (error) {
+		return "error";
+	}
+};
+
 const checkExistedUsername = async (username) => {
 	let isExistedUsername = false;
 
@@ -257,6 +280,7 @@ module.exports = {
 	checkExistedUsernameForUpdateProfile,
 	checkExistedEmailForUpdateProfile,
 	updateUserProfile,
+	upgradeUserPremiumAccount,
 	checkExistedUsername,
 	getPasswordByUsername,
 	getAdminByUsername,

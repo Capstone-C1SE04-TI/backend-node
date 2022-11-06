@@ -75,4 +75,34 @@ router.post("/profile/update", isAuth, userController.updateUserProfile);
  */
 router.get("/profile", isAuth, userController.getUserProfile);
 
+/**
+ * @swagger
+ * /user/upgrade-premium-account:
+ *   post:
+ *     description: Upgrade premium account
+ *     tags: [User]
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userId
+ *             properties:
+ *               userId:
+ *                  type: string
+ *             example:
+ *               userId: "1"
+ *     responses:
+ *       200:
+ *         description: Upgrade premium account successfully
+ *       400:
+ *         description: Upgrade premium account failed
+ */
+router.post(
+	"/upgrade-premium-account",
+	isAuth,
+	userController.upgradePremiumAccount,
+);
+
 module.exports = router;
