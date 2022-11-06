@@ -143,6 +143,32 @@ router.get(
 
 /**
  * @swagger
+ * /display/shark/detail-coin-transaction-history:
+ *   get:
+ *     description: Get detail coin transaction history of shark
+ *     tags: [Display]
+ *     parameters:
+ *      - in: query
+ *        name: sharkId
+ *        schema:
+ *          type: string
+ *      - in: query
+ *        name: coinSymbol
+ *        schema:
+ *          type: string
+ *     responses:
+ *       200:
+ *         description: Get detail coin transaction history of shark successful
+ *       400:
+ *         description: Get detail coin transaction history of shark failed
+ */
+router.get(
+	"/shark/detail-coin-transaction-history",
+	displayController.getDetailCoinTransactionHistory,
+);
+
+/**
+ * @swagger
  * /display/tags:
  *   get:
  *     description: Get list of tags

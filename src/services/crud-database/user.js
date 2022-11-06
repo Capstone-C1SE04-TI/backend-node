@@ -142,6 +142,20 @@ const checkExistedUserId = async (userId) => {
 	return isExistedUserId;
 };
 
+const checkExistedSharkId = async (sharkId) => {
+	let isExistedSharkId = false;
+
+	const sharks = await database.collection("sharks").get();
+
+	sharks.forEach((doc) => {
+		if (doc.get("id") === sharkId) {
+			isExistedSharkId = true;
+		}
+	});
+
+	return isExistedSharkId;
+};
+
 const getPasswordByUsername = async (username) => {
 	let password;
 
@@ -638,6 +652,42 @@ const getListTransactionsOfShark = async (sharkId) => {
 	return transactions;
 };
 
+const getDetailCoinTransactionHistoryOfShark = async (sharkId, coinSymbol) => {
+	try {
+		if (sharkId === null) return { message: "sharkid-required" };
+
+		if (sharkId === undefined) return { message: "sharkid-invalid" };
+
+		if (!coinSymbol) return { message: "coinsymbol-required" };
+
+		if (!(await checkExistedSharkId(sharkId)))
+			return { message: "shark-notfound" };
+
+		const sharks = await database
+			.collection("sharks")
+			.where("id", "==", sharkId)
+			.get();
+
+		let obj;
+
+		sharks.forEach((doc) => {
+			obj = doc
+				.data()
+				.historyDatas.find(
+					(data) =>
+						_.lowerCase(data.coinSymbol) ===
+						_.lowerCase(coinSymbol),
+				);
+		});
+
+		if (!obj) return { message: "coin-notfound" };
+
+		return { message: "success", data: obj.historyData };
+	} catch (error) {
+		return { message: "error" };
+	}
+};
+
 const getHoursPriceOfToken = async (tokenSymbol) => {
 	const rawData = await database
 		.collection("tokens")
@@ -661,6 +711,7 @@ module.exports = {
 	checkExistedUsername,
 	checkExistedEmail,
 	checkExistedUserId,
+	checkExistedSharkId,
 	getPasswordByUsername,
 	getPasswordByEmail,
 	getListOfCoinsAndTokens,
@@ -674,6 +725,7 @@ module.exports = {
 	getListTrendingTokens,
 	getListCryptosOfShark,
 	getListTransactionsOfShark,
+	getDetailCoinTransactionHistoryOfShark,
 	getHoursPriceOfToken,
 	getDateNearTransaction,
 };
