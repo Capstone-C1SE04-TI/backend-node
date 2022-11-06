@@ -292,13 +292,15 @@ function DisplayController() {
 					return res.status(200).json({
 						message: "successfully",
 						error: null,
-						data: Object.entries(data.data),
+						datas: Object.entries(data.data),
+						datasLength: Object.entries(data.data).length,
 					});
 				} else {
 					return res.status(400).json({
 						message: data.message,
 						error: data.message,
-						data: null,
+						datas: null,
+						datasLength: 0,
 					});
 				}
 			})
@@ -306,7 +308,8 @@ function DisplayController() {
 				return res.status(400).json({
 					message: "failed",
 					error: error,
-					data: null,
+					datas: null,
+					datasLength: 0,
 				});
 			});
 	};
