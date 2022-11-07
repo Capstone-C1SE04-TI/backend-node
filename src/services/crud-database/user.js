@@ -1,5 +1,9 @@
 const database = require("../../configs/connect-database");
 const firebase = require("firebase-admin");
+const { getUsersLength } = require("./admin");
+const { isEqual, result, initial } = require("lodash");
+const { async } = require("@firebase/util");
+const { raw } = require("express");
 const _ = require("lodash");
 
 const {
@@ -177,6 +181,7 @@ const getListOfCoinsAndTokens = async () => {
 			symbol: data.symbol,
 			iconURL: data.iconURL,
 			tagNames: data.tagNames,
+			cmcRank: data.cmcRank,
 			usd: data.usd,
 			marketCap: data.marketCap,
 			circulatingSupply: data.circulatingSupply,
@@ -382,70 +387,16 @@ const getSharksLength = async () => {
 	return sharks._size || 0;
 };
 
-const calculateValueOfCoin = async (numberOfCoinsHolding, coinSymbol) => {
-	let price = await getCoinOrTokenDetails(coinSymbol);
-
-	price = Object.keys(price).length === 0 ? 0 : Number(price["usd"]["price"]);
-
-	if (typeof numberOfCoinsHolding === "object")
-		numberOfCoinsHolding = Number(numberOfCoinsHolding["$numberLong"]);
-
-	return Math.floor(price * numberOfCoinsHolding);
-};
-
-const getTotalAssetOfShark = async (sharkId) => {
-	let rawData = await database
-		.collection("sharks")
-		.where("id", "==", sharkId)
-		.get();
-
-	let totalAsset = 0;
-	rawData.forEach(async (doc) => {
-		let coinsOfShark = doc.data()["coins"];
-
-		// calculate total asset
-		totalAsset = Object.keys(coinsOfShark).reduce(
-			async (currentValue, coinSymbol) => {
-				let price = await calculateValueOfCoin(
-					coinsOfShark[coinSymbol],
-					coinSymbol,
-				);
-				return (await currentValue) + price;
-			},
-			0,
-		);
-	});
-
-	return totalAsset;
-};
-
-const getArrayTotalAssets = async (sharks) => {
-	let promiseTotalAssets = await sharks.map(async (sharkId) => {
-		let totalAsset = await getTotalAssetOfShark(sharkId);
-		return totalAsset;
-	});
-
-	const totalAssets = await Promise.all(promiseTotalAssets);
-	return totalAssets;
-};
-
 const getListOfSharks = async () => {
 	let sharksList = [];
 	let sharks = await database.collection("sharks").orderBy("id", "asc").get();
 
-	let sharkIds = [];
-	sharks.forEach(async (doc) => {
-		sharkIds.push(doc.data()["id"]);
-	});
-
-	const totalAssets = await getArrayTotalAssets(sharkIds);
-
-	sharks.forEach(async (doc) => {
+	sharks.forEach((doc) => {
 		sharksList.push({
 			id: doc.data()["id"],
 			percent24h: doc.data()["percent24h"],
 			walletAddress: doc.data()["walletAddress"],
-			totalAsset: totalAssets.shift(),
+			totalAsset: doc.data()["totalAssets"],
 		});
 	});
 
@@ -455,20 +406,19 @@ const getListOfSharks = async () => {
 // Crypto of sharks
 const getListCryptosOfShark = async (sharkId) => {
 	if (!_.isNumber(sharkId)) return -1;
-
 	const rawData = await database
 		.collection("sharks")
 		.where("id", "==", sharkId)
 		.get();
 
 	let coins = {};
+
 	rawData.forEach((doc) => {
 		coins = doc.data()["coins"];
 	});
 
 	const promiseCryptos = await Object.keys(coins).map(async (coinSymbol) => {
-		let coinDetails = await getCoinOrTokenDetails(coinSymbol);
-
+		const coinDetails = await getCoinOrTokenDetails(coinSymbol);
 		if (Object.keys(coinDetails).length === 0) return {};
 		else {
 			let quantity = coins[coinSymbol];
@@ -487,7 +437,7 @@ const getListCryptosOfShark = async (sharkId) => {
 		}
 	});
 
-	const cryptos = await getValueFromPromise(promiseCryptos);
+	let cryptos = await getValueFromPromise(promiseCryptos);
 
 	return cryptos.length !== 0 ? cryptos : -1;
 };
