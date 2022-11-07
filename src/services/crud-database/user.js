@@ -184,6 +184,7 @@ const getListOfCoinsAndTokens = async () => {
 			symbol: data.symbol,
 			iconURL: data.iconURL,
 			tagNames: data.tagNames,
+			cmcRank: data.cmcRank,
 			usd: data.usd,
 			marketCap: data.marketCap,
 			circulatingSupply: data.circulatingSupply,
@@ -464,13 +465,16 @@ const getListCryptosOfShark = async (sharkId) => {
 		.get();
 
 	let coins = {};
+
+	const coinsList = await getListOfCoinsAndTokens();
+
 	rawData.forEach((doc) => {
 		coins = doc.data()["coins"];
 	});
 
-	const promiseCryptos = await Object.keys(coins).map(async (coinSymbol) => {
-		let coinDetails = await getCoinOrTokenDetails(coinSymbol);
-
+	const promiseCryptos = await Object.keys(coins).map( (coinSymbol) => {
+		let coinDetails = coinsList.find((coin) => coin.symbol === coinSymbol)
+		console.log( coinDetails);
 		if (Object.keys(coinDetails).length === 0) return {};
 		else {
 			let quantity = coins[coinSymbol];
