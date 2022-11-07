@@ -8,18 +8,15 @@ const { validateUpdateProfileBody } = require("../validators/user");
 
 function UserController() {
 	this.getUserProfile = async (req, res, next) => {
-		let userId;
+		let userId = req.query.userId;
 
-		if (!req.query.userId) {
+		if (!userId) {
 			userId = null;
 		} else {
-			const userIdCheck = _.toString(req.query.userId);
+			const userIdCheck = _.toString(userId);
 
-			if (_.isNaN(userIdCheck)) {
-				userId = undefined;
-			} else {
-				userId = Number(userIdCheck);
-			}
+			if (_.isNaN(userIdCheck)) userId = undefined;
+			else userId = Number(userIdCheck);
 		}
 
 		await getUserProfile(userId)
@@ -48,18 +45,15 @@ function UserController() {
 	};
 
 	this.updateUserProfile = async (req, res, next) => {
-		let userId;
+		let userId = req.query.userId;
 
-		if (!req.query.userId) {
+		if (!userId) {
 			userId = null;
 		} else {
-			const userIdCheck = _.toString(req.query.userId);
+			const userIdCheck = _.toString(userId);
 
-			if (_.isNaN(userIdCheck)) {
-				userId = undefined;
-			} else {
-				userId = Number(userIdCheck);
-			}
+			if (_.isNaN(userIdCheck)) userId = undefined;
+			else userId = Number(userIdCheck);
 		}
 
 		const { status, error } = await validateUpdateProfileBody(
