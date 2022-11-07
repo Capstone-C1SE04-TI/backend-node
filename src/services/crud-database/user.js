@@ -76,6 +76,7 @@ const createNewUser = async ({
 		fullName: DEFAULT_USER_FULLNAME,
 		avatar: DEFAULT_USER_AVATAR,
 		website: DEFAULT_USER_WEBSITE,
+		premiumAccount: false,
 		createdDate: currentTimestamp,
 		updatedDate: currentTimestamp,
 	};
@@ -139,6 +140,20 @@ const checkExistedUserId = async (userId) => {
 	});
 
 	return isExistedUserId;
+};
+
+const checkExistedSharkId = async (sharkId) => {
+	let isExistedSharkId = false;
+
+	const sharks = await database.collection("sharks").get();
+
+	sharks.forEach((doc) => {
+		if (doc.get("id") === sharkId) {
+			isExistedSharkId = true;
+		}
+	});
+
+	return isExistedSharkId;
 };
 
 const getPasswordByUsername = async (username) => {
@@ -410,45 +425,16 @@ const getSharksLength = async () => {
 	return length || 0;
 };
 
-const calculateValueOfCoin = async (numberOfCoinsHolding, coinSymbol) => {
-	let price = await getCoinOrTokenDetails(coinSymbol);
-	price = Object.keys(price).length === 0 ? 0 : Number(price["usd"]["price"]);
-	if (typeof numberOfCoinsHolding === "object")
-		numberOfCoinsHolding = Number(numberOfCoinsHolding["$numberLong"]);
-	return Math.floor(price * numberOfCoinsHolding);
-};
-
-const getArrayTotalAssets = async (sharks) => {
-	let promiseTotalAssets = await sharks.map(async (sharkId) => {
-		let totalAsset = await getListCryptosOfShark(sharkId);
-		totalAsset = totalAsset.reduce((initialVal, value) =>{
-			return initialVal + value.total
-		}, 0)
-		return totalAsset;
-	});
-
-	const totalAssets = await Promise.allSettled(promiseTotalAssets)
-
-	return totalAssets;
-};
-
 const getListOfSharks = async () => {
 	let sharksList = [];
 	let sharks = await database.collection("sharks").orderBy("id", "asc").get();
 
-	let sharkIds = [];
-	sharks.forEach(async (doc) => {
-		sharkIds.push(doc.data()["id"]);
-	});
-
-	const totalAssets = await getArrayTotalAssets(sharkIds);
-
-	sharks.forEach(async (doc) => {
+	sharks.forEach((doc) => {
 		sharksList.push({
 			id: doc.data()["id"],
 			percent24h: doc.data()["percent24h"],
 			walletAddress: doc.data()["walletAddress"],
-			totalAsset: totalAssets.shift(),
+			totalAsset: doc.data()["totalAssets"],
 		});
 	});
 
@@ -458,7 +444,6 @@ const getListOfSharks = async () => {
 // Crypto of sharks
 const getListCryptosOfShark = async (sharkId) => {
 	if (!_.isNumber(sharkId)) return -1;
-
 	const rawData = await database
 		.collection("sharks")
 		.where("id", "==", sharkId)
@@ -466,15 +451,11 @@ const getListCryptosOfShark = async (sharkId) => {
 
 	let coins = {};
 
-	const coinsList = await getListOfCoinsAndTokens();
-
 	rawData.forEach((doc) => {
 		coins = doc.data()["coins"];
 	});
-
-	const promiseCryptos = await Object.keys(coins).map( (coinSymbol) => {
-		let coinDetails = coinsList.find((coin) => coin.symbol === coinSymbol)
-		console.log( coinDetails);
+	const promiseCryptos = await Object.keys(coins).map(async (coinSymbol) => {
+		const coinDetails = await getCoinOrTokenDetails(coinSymbol);
 		if (Object.keys(coinDetails).length === 0) return {};
 		else {
 			let quantity = coins[coinSymbol];
@@ -493,9 +474,9 @@ const getListCryptosOfShark = async (sharkId) => {
 		}
 	});
 
-	const cryptos = await getValueFromPromise(promiseCryptos);
+	let cryptos = await getValueFromPromise(promiseCryptos);
 
-	return cryptos.length !== 0 ? cryptos : -1;
+	return cryptos;
 };
 
 // Transaction history
@@ -607,10 +588,10 @@ const getListTransactionsOfShark = async (sharkId) => {
 					numberOfTokens: numberOfTokens,
 					pastPrice: dateNearTransaction["value"],
 					presentPrice: presentPrice,
-				}
+				};
 
-				Object.assign(transaction, calculatePrice)
-				
+				Object.assign(transaction, calculatePrice);
+
 				return transaction;
 			});
 	});
@@ -618,6 +599,42 @@ const getListTransactionsOfShark = async (sharkId) => {
 	transactions = await getValueFromPromise(transactions);
 
 	return transactions;
+};
+
+const getDetailCoinTransactionHistoryOfShark = async (sharkId, coinSymbol) => {
+	try {
+		if (sharkId === null) return { message: "sharkid-required" };
+
+		if (sharkId === undefined) return { message: "sharkid-invalid" };
+
+		if (!coinSymbol) return { message: "coinsymbol-required" };
+
+		if (!(await checkExistedSharkId(sharkId)))
+			return { message: "shark-notfound" };
+
+		const sharks = await database
+			.collection("sharks")
+			.where("id", "==", sharkId)
+			.get();
+
+		let obj;
+
+		sharks.forEach((doc) => {
+			obj = doc
+				.data()
+				.historyDatas.find(
+					(data) =>
+						_.lowerCase(data.coinSymbol) ===
+						_.lowerCase(coinSymbol),
+				);
+		});
+
+		if (!obj) return { message: "coin-notfound" };
+
+		return { message: "success", data: obj.historyData };
+	} catch (error) {
+		return { message: "error" };
+	}
 };
 
 const getHoursPriceOfToken = async (tokenSymbol) => {
@@ -643,6 +660,7 @@ module.exports = {
 	checkExistedUsername,
 	checkExistedEmail,
 	checkExistedUserId,
+	checkExistedSharkId,
 	getPasswordByUsername,
 	getPasswordByEmail,
 	getListOfCoinsAndTokens,
@@ -656,6 +674,7 @@ module.exports = {
 	getListTrendingTokens,
 	getListCryptosOfShark,
 	getListTransactionsOfShark,
+	getDetailCoinTransactionHistoryOfShark,
 	getHoursPriceOfToken,
 	getDateNearTransaction,
 };

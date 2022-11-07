@@ -1,4 +1,3 @@
-const { expressjwt } = require("express-jwt");
 const { isAuthed } = require("../../services/authentication");
 
 const dotenv = require("dotenv");
@@ -47,7 +46,6 @@ const isAdmin = async (req, res, next) => {
 };
 
 module.exports = {
-	// requireSignIn,
 	isAuth,
 	isAdmin,
 };

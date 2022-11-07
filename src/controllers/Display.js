@@ -9,6 +9,7 @@ const {
 	getCoinOrTokenDetails,
 	getListCryptosOfShark,
 	getListTransactionsOfShark,
+	getDetailCoinTransactionHistoryOfShark,
 } = require("../services/crud-database/user");
 
 function DisplayController() {
@@ -270,6 +271,44 @@ function DisplayController() {
 					message: "failed",
 					error: error,
 					datas: [],
+					datasLength: 0,
+				});
+			});
+	};
+
+	this.getDetailCoinTransactionHistory = async (req, res, next) => {
+		let { sharkId, coinSymbol } = req.query;
+
+		if (!sharkId) {
+			sharkId = null;
+		} else {
+			if (isNaN(sharkId)) sharkId = undefined;
+			else sharkId = Number(sharkId);
+		}
+
+		await getDetailCoinTransactionHistoryOfShark(sharkId, coinSymbol)
+			.then((data) => {
+				if (data.message == "success") {
+					return res.status(200).json({
+						message: "successfully",
+						error: null,
+						datas: Object.entries(data.data),
+						datasLength: Object.entries(data.data).length,
+					});
+				} else {
+					return res.status(400).json({
+						message: data.message,
+						error: data.message,
+						datas: null,
+						datasLength: 0,
+					});
+				}
+			})
+			.catch((error) => {
+				return res.status(400).json({
+					message: "failed",
+					error: error,
+					datas: null,
 					datasLength: 0,
 				});
 			});
