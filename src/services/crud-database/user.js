@@ -476,7 +476,7 @@ const getListCryptosOfShark = async (sharkId) => {
 
 	let cryptos = await getValueFromPromise(promiseCryptos);
 
-	return cryptos;
+	return cryptos.length !== 0 ? cryptos : -1;
 };
 
 // Transaction history
