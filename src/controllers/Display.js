@@ -161,7 +161,7 @@ function DisplayController() {
 				return res.status(400).json({
 					message: "failed",
 					error: error,
-					datas: {},
+					data: {},
 				});
 			});
 	};
@@ -196,12 +196,12 @@ function DisplayController() {
 	};
 
 	this.getCryptosOfShark = async (req, res, next) => {
-		let sharkId;
+		let sharkId = req.query.sharkId;
 
-		if (!req.query.sharkId) {
+		if (!sharkId) {
 			sharkId = null;
 		} else {
-			const idCheck = _.toNumber(req.query.sharkId);
+			const idCheck = _.toNumber(sharkId);
 			if (_.isNaN(idCheck)) {
 				sharkId = undefined;
 			} else {
@@ -238,16 +238,19 @@ function DisplayController() {
 	};
 
 	this.getTransactionsOfShark = async (req, res, next) => {
-		if (!req.query.id) {
+		let sharkId = req.query.id;
+
+		if (!sharkId) {
 			sharkId = null;
 		} else {
-			const idCheck = _.toNumber(req.query.id);
+			const idCheck = _.toNumber(sharkId);
 			if (_.isNaN(idCheck)) {
 				sharkId = undefined;
 			} else {
 				sharkId = idCheck;
 			}
 		}
+
 		await getListTransactionsOfShark(sharkId)
 			.then((datas) => {
 				if (!_.isArray(datas)) {
