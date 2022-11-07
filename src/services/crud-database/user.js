@@ -1,9 +1,5 @@
 const database = require("../../configs/connect-database");
 const firebase = require("firebase-admin");
-const { getUsersLength } = require("./admin");
-const { isEqual, result } = require("lodash");
-const { async } = require("@firebase/util");
-const { raw } = require("express");
 const _ = require("lodash");
 
 const {
@@ -13,9 +9,9 @@ const {
 } = require("../../constants");
 const {
 	randomFirestoreDocumentId,
-	comparePassword,
 	convertUnixTimestampToNumber,
 } = require("../../helpers");
+const { getUsersLength } = require("./admin");
 
 // Utilities
 const getValueFromPromise = async (promiseValue) => {
@@ -86,7 +82,6 @@ const createNewUser = async ({
 
 const updateUserConfirmationCode = async (docId, code) => {
 	const user = database.collection("users").doc(docId);
-
 	await user.update({ confirmationCode: code });
 
 	return user;
@@ -94,66 +89,49 @@ const updateUserConfirmationCode = async (docId, code) => {
 
 const updateUserPassword = async (docId, password) => {
 	const user = database.collection("users").doc(docId);
-
 	await user.update({ password: password });
 
 	return user;
 };
 
 const checkExistedUsername = async (username) => {
-	let isExistedUsername = false;
+	const users = await database
+		.collection("users")
+		.where("username", "==", username)
+		.get();
 
-	const users = await database.collection("users").get();
-
-	users.forEach((doc) => {
-		if (doc.get("username") === username) {
-			isExistedUsername = true;
-		}
-	});
-
-	return isExistedUsername;
+	// users._size = 1: existed
+	return users._size === 1;
 };
 
 const checkExistedEmail = async (email) => {
-	let isExistedEmail = false;
+	const users = await database
+		.collection("users")
+		.where("email", "==", email)
+		.get();
 
-	const users = await database.collection("users").get();
-
-	users.forEach((doc) => {
-		if (doc.get("email") === email) {
-			isExistedEmail = true;
-		}
-	});
-
-	return isExistedEmail;
+	// users._size = 1: existed
+	return users._size === 1;
 };
 
 const checkExistedUserId = async (userId) => {
-	let isExistedUserId = false;
+	const users = await database
+		.collection("users")
+		.where("userId", "==", userId)
+		.get();
 
-	const users = await database.collection("users").get();
-
-	users.forEach((doc) => {
-		if (doc.get("userId") === userId) {
-			isExistedUserId = true;
-		}
-	});
-
-	return isExistedUserId;
+	// users._size = 1: existed
+	return users._size === 1;
 };
 
 const checkExistedSharkId = async (sharkId) => {
-	let isExistedSharkId = false;
+	const sharks = await database
+		.collection("sharks")
+		.where("id", "==", sharkId)
+		.get();
 
-	const sharks = await database.collection("sharks").get();
-
-	sharks.forEach((doc) => {
-		if (doc.get("id") === sharkId) {
-			isExistedSharkId = true;
-		}
-	});
-
-	return isExistedSharkId;
+	// sharks._size = 1: existed
+	return sharks._size === 1;
 };
 
 const getPasswordByUsername = async (username) => {
@@ -215,16 +193,8 @@ const getListOfCoinsAndTokens = async () => {
 };
 
 const getCoinsAndTokensLength = async () => {
-	let length = 0;
-
-	await database
-		.collection("tokens")
-		.get()
-		.then((snap) => {
-			length = snap.size;
-		});
-
-	return length || 0;
+	const tokens = await database.collection("tokens").get();
+	return tokens._size || 0;
 };
 
 const getListReducingCoinsAndTokens = async () => {
@@ -391,17 +361,13 @@ const getCoinOrTokenDetails = async (coinSymbol) => {
 		});
 	}
 
-	// check if object is empty
-	if (Object.entries(coinInfo).length === 0) return {};
-
 	return coinInfo;
 };
 
 const getListOfTags = async () => {
-	let tags = [];
 	let tagsList = [];
 
-	tags = await database.collection("tags").orderBy("id", "asc").get();
+	const tags = await database.collection("tags").orderBy("id", "asc").get();
 
 	tags.forEach((doc) => {
 		tagsList.push(doc.data());
@@ -412,23 +378,18 @@ const getListOfTags = async () => {
 
 // Sharks
 const getSharksLength = async () => {
-	let length = 0;
-
-	await database
-		.collection("sharks")
-		.get()
-		.then((snap) => {
-			length = snap.size;
-		});
-
-	return length || 0;
+	const sharks = await database.collection("sharks").get();
+	return sharks._size || 0;
 };
 
 const calculateValueOfCoin = async (numberOfCoinsHolding, coinSymbol) => {
 	let price = await getCoinOrTokenDetails(coinSymbol);
+
 	price = Object.keys(price).length === 0 ? 0 : Number(price["usd"]["price"]);
+
 	if (typeof numberOfCoinsHolding === "object")
 		numberOfCoinsHolding = Number(numberOfCoinsHolding["$numberLong"]);
+
 	return Math.floor(price * numberOfCoinsHolding);
 };
 
@@ -441,6 +402,7 @@ const getTotalAssetOfShark = async (sharkId) => {
 	let totalAsset = 0;
 	rawData.forEach(async (doc) => {
 		let coinsOfShark = doc.data()["coins"];
+
 		// calculate total asset
 		totalAsset = Object.keys(coinsOfShark).reduce(
 			async (currentValue, coinSymbol) => {
@@ -537,6 +499,7 @@ const getDateNearTransaction = (dateList, dateTransaction) => {
 	});
 	let dateTransactionCut = dateTransaction.slice(0, 10);
 	let positionDate = null;
+
 	// Cut hour
 	let dateCutByHours = datePricesTokenCut.filter((date, index) => {
 		if (Number(date) === Number(dateTransactionCut)) positionDate = index;

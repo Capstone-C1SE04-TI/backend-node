@@ -5,7 +5,7 @@ const {
 	getAdminByUsername,
 	deleteUserById,
 	getListOfUsers,
-	getUserDetail
+	getUserProfile,
 } = require("../services/crud-database/admin");
 const { validateSignInBody } = require("../validators/admin");
 const { comparePassword } = require("../helpers");
@@ -144,7 +144,7 @@ function AdminController() {
 			}
 		}
 
-		await getUserDetail(userId)
+		await getUserProfile(userId)
 			.then((data) => {
 				if (Object.entries(data).length === 0) {
 					return res.status(400).json({
