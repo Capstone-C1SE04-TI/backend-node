@@ -37,11 +37,6 @@ const getListOfUsers = async () => {
 	return usersList;
 };
 
-const getUsersLength = async () => {
-	const users = await database.collection("users").get();
-	return users._size || 0;
-};
-
 const getUserProfile = async (userId) => {
 	let userInfo = {};
 
@@ -55,7 +50,7 @@ const getUserProfile = async (userId) => {
 
 		users.forEach((doc) => {
 			const data = doc.data();
-			
+
 			userInfo = {
 				userId: data.userId,
 				username: data.username,
@@ -225,7 +220,6 @@ const deleteUserById = async (userId) => {
 
 module.exports = {
 	getListOfUsers,
-	getUsersLength,
 	getUserProfile,
 	checkExistedUsername,
 	checkExistedUsernameForUpdateProfile,

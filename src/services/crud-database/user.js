@@ -1,9 +1,5 @@
 const database = require("../../configs/connect-database");
 const firebase = require("firebase-admin");
-const { getUsersLength } = require("./admin");
-const { isEqual, result, initial } = require("lodash");
-const { async } = require("@firebase/util");
-const { raw } = require("express");
 const _ = require("lodash");
 
 const {
@@ -15,7 +11,6 @@ const {
 	randomFirestoreDocumentId,
 	convertUnixTimestampToNumber,
 } = require("../../helpers");
-const { getUsersLength } = require("./admin");
 
 // Utilities
 const getValueFromPromise = async (promiseValue) => {
@@ -52,6 +47,11 @@ const getUserByEmail = async (email) => {
 	});
 
 	return user;
+};
+
+const getUsersLength = async () => {
+	const users = await database.collection("users").get();
+	return users._size || 0;
 };
 
 const createNewUser = async ({
@@ -618,6 +618,7 @@ const getHoursPriceOfToken = async (tokenSymbol) => {
 module.exports = {
 	getUserByUsername,
 	getUserByEmail,
+	getUsersLength,
 	createNewUser,
 	updateUserConfirmationCode,
 	updateUserPassword,
