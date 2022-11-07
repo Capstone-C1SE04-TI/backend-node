@@ -4,11 +4,11 @@ const { isAuthed } = require("../../services/authentication");
 const dotenv = require("dotenv");
 dotenv.config();
 
-const requireSignIn = expressjwt({
-	secret: process.env.ACCESS_TOKEN_SECRET,
-	algorithms: ["HS256"],
-	userProperty: "auth",
-});
+// const requireSignIn = expressjwt({
+// 	secret: process.env.ACCESS_TOKEN_SECRET,
+// 	algorithms: ["HS256"],
+// 	userProperty: "auth",
+// });
 
 const isAuth = async (req, res, next) => {
 	try {
@@ -47,7 +47,7 @@ const isAdmin = async (req, res, next) => {
 };
 
 module.exports = {
-	requireSignIn,
+	// requireSignIn,
 	isAuth,
 	isAdmin,
 };
