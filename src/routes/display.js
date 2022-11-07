@@ -10,10 +10,22 @@ const displayController = require("../controllers/Display");
 
 /**
  * @swagger
+ * tags:
+ *   name: Coin - Token
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   name: Shark
+ */
+
+/**
+ * @swagger
  * /display/coins-and-tokens/reducing:
  *   get:
  *     description: Get top 10 reducing coins and tokens
- *     tags: [Display]
+ *     tags: [Coin - Token]
  *     responses:
  *       200:
  *         description: Get top 10 reducing coins and tokens successfully
@@ -30,7 +42,7 @@ router.get(
  * /display/coins-and-tokens/all:
  *   get:
  *     description: Get list of coins
- *     tags: [Display]
+ *     tags: [Coin - Token]
  *     responses:
  *       200:
  *         description: Get list of coins successfully
@@ -44,7 +56,7 @@ router.get("/coins-and-tokens/all", displayController.getCoinsAndTokens);
  * /display/coins/trending:
  *   get:
  *     description: Get top 10 trending coins
- *     tags: [Display]
+ *     tags: [Coin - Token]
  *     responses:
  *       200:
  *         description: Get top 10 trending coins successfully
@@ -58,7 +70,7 @@ router.get("/coins/trending", displayController.getTrendingCoins);
  * /display/tokens/trending:
  *   get:
  *     description: Get top 10 trending tokens
- *     tags: [Display]
+ *     tags: [Coin - Token]
  *     responses:
  *       200:
  *         description: Get top 10 trending tokens successfully
@@ -72,7 +84,7 @@ router.get("/tokens/trending", displayController.getTrendingTokens);
  * /display/coin/details:
  *   get:
  *     description: Get coin or token details
- *     tags: [Display]
+ *     tags: [Coin - Token]
  *     parameters:
  *      - in: query
  *        name: symbol
@@ -91,7 +103,7 @@ router.get("/coin/details", displayController.getCoinOrTokenDetails);
  * /display/sharks:
  *   get:
  *     description: Get list of sharks
- *     tags: [Display]
+ *     tags: [Shark]
  *     responses:
  *       200:
  *         description: Get list of sharks successfully
@@ -105,7 +117,7 @@ router.get("/sharks", displayController.getSharks);
  * /display/shark/crypto:
  *   get:
  *     description: Get list of coin and token of shark
- *     tags: [Display]
+ *     tags: [Shark]
  *     parameters:
  *      - in: query
  *        name: sharkId
@@ -124,7 +136,7 @@ router.get("/shark/crypto", displayController.getCryptosOfShark);
  * /display/shark/transaction-history:
  *   get:
  *     description: Get the transaction history of shark
- *     tags: [Display]
+ *     tags: [Shark]
  *     parameters:
  *      - in: query
  *        name: id
@@ -146,7 +158,7 @@ router.get(
  * /display/shark/detail-coin-transaction-history:
  *   get:
  *     description: Get detail coin transaction history of shark
- *     tags: [Display]
+ *     tags: [Shark]
  *     parameters:
  *      - in: query
  *        name: sharkId

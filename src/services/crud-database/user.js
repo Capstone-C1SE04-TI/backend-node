@@ -381,7 +381,6 @@ const getListOfTags = async () => {
 	return tagsList;
 };
 
-// Sharks
 const getSharksLength = async () => {
 	const sharks = await database.collection("sharks").get();
 	return sharks._size || 0;
@@ -392,18 +391,19 @@ const getListOfSharks = async () => {
 	let sharks = await database.collection("sharks").orderBy("id", "asc").get();
 
 	sharks.forEach((doc) => {
+		const data = doc.data();
+
 		sharksList.push({
-			id: doc.data()["id"],
-			percent24h: doc.data()["percent24h"],
-			walletAddress: doc.data()["walletAddress"],
-			totalAsset: doc.data()["totalAssets"],
+			id: data.id,
+			percent24h: data.percent24h,
+			walletAddress: data.walletAddress,
+			totalAsset: data.totalAssets,
 		});
 	});
 
 	return sharksList;
 };
 
-// Crypto of sharks
 const getListCryptosOfShark = async (sharkId) => {
 	if (!_.isNumber(sharkId)) return -1;
 	const rawData = await database
@@ -419,11 +419,13 @@ const getListCryptosOfShark = async (sharkId) => {
 
 	const promiseCryptos = await Object.keys(coins).map(async (coinSymbol) => {
 		const coinDetails = await getCoinOrTokenDetails(coinSymbol);
+
 		if (Object.keys(coinDetails).length === 0) return {};
 		else {
 			let quantity = coins[coinSymbol];
 			if (typeof quantity === "object")
 				quantity = Number(quantity["$numberLong"]);
+
 			return {
 				symbol: coinSymbol,
 				quantity: quantity,
@@ -442,7 +444,6 @@ const getListCryptosOfShark = async (sharkId) => {
 	return cryptos.length !== 0 ? cryptos : -1;
 };
 
-// Transaction history
 const getDateNearTransaction = (dateList, dateTransaction) => {
 	let datePricesTokenCut = dateList.map((date) => {
 		return date["date"].slice(0, 10);
