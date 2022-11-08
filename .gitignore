@@ -1,3 +1,5 @@
 /node_modules
 .env
 service-account-Capstone-C1SE04-TI-Main.json
+Dockerfile
+.dockerignore
