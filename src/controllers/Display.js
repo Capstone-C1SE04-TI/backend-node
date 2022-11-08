@@ -273,7 +273,6 @@ function DisplayController() {
 				return res.status(400).json({
 					message: "failed",
 					error: error,
-					dataLength: 0,
 					datas: [],
 					datasLength: 0,
 				});
