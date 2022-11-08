@@ -411,35 +411,11 @@ const getListCryptosOfShark = async (sharkId) => {
 		.where("id", "==", sharkId)
 		.get();
 
-	let coins = {};
+	let cryptos = [];
 
 	rawData.forEach((doc) => {
-		coins = doc.data()["coins"];
+		cryptos = doc.data()["cryptos"];
 	});
-
-	const promiseCryptos = await Object.keys(coins).map(async (coinSymbol) => {
-		const coinDetails = await getCoinOrTokenDetails(coinSymbol);
-
-		if (Object.keys(coinDetails).length === 0) return {};
-		else {
-			let quantity = coins[coinSymbol];
-			if (typeof quantity === "object")
-				quantity = Number(quantity["$numberLong"]);
-
-			return {
-				symbol: coinSymbol,
-				quantity: quantity,
-				name: coinDetails["name"],
-				tagNames: coinDetails["tagNames"],
-				cmcRank: coinDetails["cmcRank"],
-				iconURL: coinDetails["iconURL"],
-				price: coinDetails["usd"]["price"],
-				total: Math.floor(coinDetails["usd"]["price"] * quantity),
-			};
-		}
-	});
-
-	let cryptos = await getValueFromPromise(promiseCryptos);
 
 	return cryptos.length !== 0 ? cryptos : -1;
 };
