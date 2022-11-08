@@ -438,6 +438,18 @@ const getListCryptosOfShark = async (sharkId) => {
 	return cryptos.length !== 0 ? cryptos : -1;
 };
 
+// Transaction history
+const getTransactionsOfAllSharks = async () => {
+	const rawData = await database.collection("sharks").get();
+
+	let transactions = [];
+
+	rawData.forEach((doc) => {
+		transactions = transactions.concat(doc.data()["transactionsHistory"]);
+	});
+	return transactions;
+};
+
 const getListTransactionsOfShark = async (sharkId) => {
 	if (!_.isNumber(sharkId)) return -1;
 
@@ -513,6 +525,7 @@ module.exports = {
 	getListTrendingCoins,
 	getListTrendingTokens,
 	getListCryptosOfShark,
+	getTransactionsOfAllSharks,
 	getListTransactionsOfShark,
 	getDetailCoinTransactionHistoryOfShark,
 	getHoursPriceOfToken,
