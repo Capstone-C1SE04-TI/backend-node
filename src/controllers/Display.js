@@ -281,7 +281,6 @@ function DisplayController() {
 	};
 
 	this.getListTransactionsOfAllSharks = async (req, res, next) => {
-
 		await getTransactionsOfAllSharks()
 			.then((datas) => {
 				if (!_.isArray(datas)) {
