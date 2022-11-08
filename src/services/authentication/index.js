@@ -40,6 +40,7 @@ const isAuthed = async (req, res, next) => {
 		accessTokenHeader,
 		ACCESS_TOKEN_SECRET,
 	);
+
 	const decodeValue2 = await decodeToken(cookie, ACCESS_TOKEN_SECRET);
 
 	if (!decodeValue1 || !decodeValue2) return false;

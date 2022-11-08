@@ -2,41 +2,39 @@ const database = require("../../configs/connect-database");
 const firebase = require("firebase-admin");
 
 const checkExistedUserId = async (userId) => {
-	let isExistedUserId = false;
+	const users = await database
+		.collection("users")
+		.where("userId", "==", userId)
+		.get();
 
-	const users = await database.collection("users").get();
-
-	users.forEach((doc) => {
-		if (doc.get("userId") === userId) {
-			isExistedUserId = true;
-		}
-	});
-
-	return isExistedUserId;
+	// users._size = 1: existed
+	return users._size === 1;
 };
 
 const getListOfUsers = async () => {
 	let usersList = [];
+	let userInfo = {};
 	let users = await database.collection("users").orderBy("id", "asc").get();
 
 	users.forEach((doc) => {
-		usersList.push(doc.data());
+		const data = doc.data();
+
+		userInfo = {
+			userId: data.userId,
+			username: data.username,
+			email: data.email,
+			phoneNumber: data.phoneNumber,
+			fullName: data.fullName,
+			avatar: data.avatar,
+			website: data.website,
+			updatedDate: data.updatedDate,
+			createdDate: data.createdDate,
+		};
+
+		usersList.push(userInfo);
 	});
 
 	return usersList;
-};
-
-const getUsersLength = async () => {
-	let length = 0;
-
-	await database
-		.collection("users")
-		.get()
-		.then((snap) => {
-			length = snap.size;
-		});
-
-	return length || 0;
 };
 
 const getUserProfile = async (userId) => {
@@ -67,44 +65,41 @@ const getUserProfile = async (userId) => {
 		});
 	}
 
-	if (Object.entries(userInfo).length === 0) return {};
-
 	return userInfo;
 };
 
 const checkExistedUsernameForUpdateProfile = async (userId, username) => {
-	let isExistedUsername = false;
-
+	let check = false;
 	const users = await database.collection("users").get();
 
 	users.forEach((doc) => {
 		if (doc.get("username") == username && doc.get("userId") != userId) {
-			isExistedUsername = true;
+			check = true;
+			return;
 		}
 	});
 
-	return isExistedUsername;
+	return check;
 };
 
 const checkExistedEmailForUpdateProfile = async (userId, email) => {
-	let isExistedEmail = false;
-
+	let check = false;
 	const users = await database.collection("users").get();
 
 	users.forEach((doc) => {
 		if (doc.get("email") == email && doc.get("userId") != userId) {
-			isExistedEmail = true;
+			check = true;
+			return;
 		}
 	});
 
-	return isExistedEmail;
+	return check;
 };
 
 const updateUserProfile = async (userId, updateInfo) => {
 	try {
-		if (!userId) {
-			return "userid-required";
-		} else {
+		if (!userId) return "userid-required";
+		else {
 			const { fullName, email, phoneNumber, website, avatar } =
 				updateInfo;
 
@@ -144,18 +139,37 @@ const updateUserProfile = async (userId, updateInfo) => {
 	}
 };
 
+const upgradeUserPremiumAccount = async (userId) => {
+	try {
+		if (userId === null) return "userid-required";
+
+		if (userId === undefined) return "userid-invalid";
+
+		if (!(await checkExistedUserId(userId))) return "user-notfound";
+
+		const users = await database
+			.collection("users")
+			.where("userId", "==", userId)
+			.get();
+
+		users.forEach((doc) => {
+			doc.ref.update({ premiumAccount: true });
+		});
+
+		return "success";
+	} catch (error) {
+		return "error";
+	}
+};
+
 const checkExistedUsername = async (username) => {
-	let isExistedUsername = false;
+	const admins = await database
+		.collection("admins")
+		.where("username", "==", username)
+		.get();
 
-	const admins = await database.collection("admins").get();
-
-	admins.forEach((doc) => {
-		if (doc.get("username") === username) {
-			isExistedUsername = true;
-		}
-	});
-
-	return isExistedUsername;
+	// admins._size = 1: existed
+	return admins._size === 1;
 };
 
 const getPasswordByUsername = async (username) => {
@@ -188,14 +202,31 @@ const getAdminByUsername = async (username) => {
 	return user;
 };
 
+const deleteUserById = async (userId) => {
+	let rawDataUser = await database
+		.collection("users")
+		.where("id", "==", userId)
+		.get();
+
+	let isDeleted = false;
+
+	rawDataUser.forEach((doc) => {
+		isDeleted = true;
+		doc.ref.delete();
+	});
+
+	return isDeleted;
+};
+
 module.exports = {
 	getListOfUsers,
-	getUsersLength,
 	getUserProfile,
+	checkExistedUsername,
 	checkExistedUsernameForUpdateProfile,
 	checkExistedEmailForUpdateProfile,
 	updateUserProfile,
-	checkExistedUsername,
+	upgradeUserPremiumAccount,
 	getPasswordByUsername,
 	getAdminByUsername,
+	deleteUserById,
 };

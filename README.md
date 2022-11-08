@@ -1,6 +1,6 @@
 ## Cryptocurrency Tracking And Analysis System
 
-### Capstone Project 1 - Source Backend (Node)
+### Capstone Project 1 - Source Backend (NodeJS)
 
 ### How to run this project?
 

@@ -60,9 +60,11 @@ function AuthController() {
 		const { status, error } = await validateSignInBody(req, res, next);
 
 		if (status === "failed") {
-			return res
-				.status(400)
-				.json({ message: error, error: error, user: null });
+			return res.status(400).json({
+				message: error,
+				error: error,
+				user: null,
+			});
 		}
 
 		if (!(await checkExistedUsername(username))) {
@@ -96,6 +98,7 @@ function AuthController() {
 								message: "successfully",
 								error: null,
 								user: {
+									role: "user",
 									username: user.username,
 									userId: user.userId,
 									email: user.email,
@@ -107,6 +110,7 @@ function AuthController() {
 									message: "successfully",
 									error: null,
 									user: {
+										role: "user",
 										username: user.username,
 										userId: user.userId,
 										email: user.email,
