@@ -8,6 +8,7 @@ const {
 	getListTrendingTokens,
 	getCoinOrTokenDetails,
 	getListCryptosOfShark,
+	getTransactionsOfAllSharks,
 	getListTransactionsOfShark,
 	getDetailCoinTransactionHistoryOfShark,
 } = require("../services/crud-database/user");
@@ -257,6 +258,36 @@ function DisplayController() {
 					return res.status(400).json({
 						message: "failed-sharkid-invalid",
 						error: "sharkid-invalid",
+						datas: [],
+						datasLength: 0,
+					});
+				} else {
+					return res.status(200).json({
+						message: "successfully",
+						error: null,
+						datas: datas,
+						datasLength: datas.length,
+					});
+				}
+			})
+			.catch((error) => {
+				return res.status(400).json({
+					message: "failed",
+					error: error,
+					datas: [],
+					datasLength: 0,
+				});
+			});
+	};
+
+	this.getListTransactionsOfAllSharks = async (req, res, next) => {
+
+		await getTransactionsOfAllSharks()
+			.then((datas) => {
+				if (!_.isArray(datas)) {
+					return res.status(400).json({
+						message: "failed-listtransaction-not-exist",
+						error: "listtransaction-not-exist",
 						datas: [],
 						datasLength: 0,
 					});

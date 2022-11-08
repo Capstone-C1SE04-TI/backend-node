@@ -114,6 +114,23 @@ router.get("/sharks", displayController.getSharks);
 
 /**
  * @swagger
+ * /display/sharks/transaction-history:
+ *   get:
+ *     description: Get list transactions history of all sharks
+ *     tags: [Shark]
+ *     responses:
+ *       200:
+ *         description: Get list transactions history of all sharks successfully
+ *       400:
+ *         description: Get list transactions history of all sharks failed
+ */
+ router.get(
+	"/sharks/transaction-history",
+	displayController.getListTransactionsOfAllSharks,
+);
+
+/**
+ * @swagger
  * /display/shark/crypto:
  *   get:
  *     description: Get list of coin and token of shark
