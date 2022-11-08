@@ -8,7 +8,9 @@ const {
 	getListTrendingTokens,
 	getCoinOrTokenDetails,
 	getListCryptosOfShark,
+	getTransactionsOfAllSharks,
 	getListTransactionsOfShark,
+	getDetailCoinTransactionHistoryOfShark,
 } = require("../services/crud-database/user");
 
 function DisplayController() {
@@ -160,7 +162,7 @@ function DisplayController() {
 				return res.status(400).json({
 					message: "failed",
 					error: error,
-					datas: {},
+					data: {},
 				});
 			});
 	};
@@ -195,12 +197,12 @@ function DisplayController() {
 	};
 
 	this.getCryptosOfShark = async (req, res, next) => {
-		let sharkId;
+		let sharkId = req.query.sharkId;
 
-		if (!req.query.sharkId) {
+		if (!sharkId) {
 			sharkId = null;
 		} else {
-			const idCheck = _.toNumber(req.query.sharkId);
+			const idCheck = _.toNumber(sharkId);
 			if (_.isNaN(idCheck)) {
 				sharkId = undefined;
 			} else {
@@ -237,16 +239,19 @@ function DisplayController() {
 	};
 
 	this.getTransactionsOfShark = async (req, res, next) => {
-		if (!req.query.id) {
+		let sharkId = req.query.id;
+
+		if (!sharkId) {
 			sharkId = null;
 		} else {
-			const idCheck = _.toNumber(req.query.id);
+			const idCheck = _.toNumber(sharkId);
 			if (_.isNaN(idCheck)) {
 				sharkId = undefined;
 			} else {
 				sharkId = idCheck;
 			}
 		}
+
 		await getListTransactionsOfShark(sharkId)
 			.then((datas) => {
 				if (!_.isArray(datas)) {
@@ -270,6 +275,74 @@ function DisplayController() {
 					message: "failed",
 					error: error,
 					datas: [],
+					datasLength: 0,
+				});
+			});
+	};
+
+	this.getListTransactionsOfAllSharks = async (req, res, next) => {
+
+		await getTransactionsOfAllSharks()
+			.then((datas) => {
+				if (!_.isArray(datas)) {
+					return res.status(400).json({
+						message: "failed-listtransaction-not-exist",
+						error: "listtransaction-not-exist",
+						datas: [],
+						datasLength: 0,
+					});
+				} else {
+					return res.status(200).json({
+						message: "successfully",
+						error: null,
+						datas: datas,
+						datasLength: datas.length,
+					});
+				}
+			})
+			.catch((error) => {
+				return res.status(400).json({
+					message: "failed",
+					error: error,
+					datas: [],
+					datasLength: 0,
+				});
+			});
+	};
+
+	this.getDetailCoinTransactionHistory = async (req, res, next) => {
+		let { sharkId, coinSymbol } = req.query;
+
+		if (!sharkId) {
+			sharkId = null;
+		} else {
+			if (isNaN(sharkId)) sharkId = undefined;
+			else sharkId = Number(sharkId);
+		}
+
+		await getDetailCoinTransactionHistoryOfShark(sharkId, coinSymbol)
+			.then((data) => {
+				if (data.message == "success") {
+					return res.status(200).json({
+						message: "successfully",
+						error: null,
+						datas: Object.entries(data.data),
+						datasLength: Object.entries(data.data).length,
+					});
+				} else {
+					return res.status(400).json({
+						message: data.message,
+						error: data.message,
+						datas: null,
+						datasLength: 0,
+					});
+				}
+			})
+			.catch((error) => {
+				return res.status(400).json({
+					message: "failed",
+					error: error,
+					datas: null,
 					datasLength: 0,
 				});
 			});

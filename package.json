@@ -23,7 +23,6 @@
 		"cors": "^2.8.5",
 		"dotenv": "^16.0.2",
 		"express": "^4.18.1",
-		"express-jwt": "^7.7.7",
 		"express-validator": "^6.14.2",
 		"firebase": "^9.9.4",
 		"firebase-admin": "^11.0.1",
@@ -31,14 +30,11 @@
 		"jsonwebtoken": "^8.5.1",
 		"lodash": "^4.17.21",
 		"morgan": "^1.10.0",
-		"node-fetch": "^2.6.7",
 		"nodemailer": "^6.8.0",
 		"nodemon": "^2.0.19",
-		"rand-token": "^1.0.1",
 		"swagger-jsdoc": "^6.2.5",
 		"swagger-ui-express": "^4.5.0",
-		"util": "^0.12.4",
-		"uuid": "^8.3.2"
+		"util": "^0.12.4"
 	},
 	"engines": {
 		"node": "v16.17.0"

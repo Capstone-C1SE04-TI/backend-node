@@ -2,23 +2,21 @@ const _ = require("lodash");
 const {
 	getUserProfile,
 	updateUserProfile,
+	upgradeUserPremiumAccount,
 } = require("../services/crud-database/admin");
 const { validateUpdateProfileBody } = require("../validators/user");
 
 function UserController() {
 	this.getUserProfile = async (req, res, next) => {
-		let userId;
+		let userId = req.query.userId;
 
-		if (!req.query.userId) {
+		if (!userId) {
 			userId = null;
 		} else {
-			const userIdCheck = _.toString(req.query.userId);
+			const userIdCheck = _.toString(userId);
 
-			if (_.isNaN(userIdCheck)) {
-				userId = undefined;
-			} else {
-				userId = Number(userIdCheck);
-			}
+			if (_.isNaN(userIdCheck)) userId = undefined;
+			else userId = Number(userIdCheck);
 		}
 
 		await getUserProfile(userId)
@@ -47,18 +45,15 @@ function UserController() {
 	};
 
 	this.updateUserProfile = async (req, res, next) => {
-		let userId;
+		let userId = req.query.userId;
 
-		if (!req.query.userId) {
+		if (!userId) {
 			userId = null;
 		} else {
-			const userIdCheck = _.toString(req.query.userId);
+			const userIdCheck = _.toString(userId);
 
-			if (_.isNaN(userIdCheck)) {
-				userId = undefined;
-			} else {
-				userId = Number(userIdCheck);
-			}
+			if (_.isNaN(userIdCheck)) userId = undefined;
+			else userId = Number(userIdCheck);
 		}
 
 		const { status, error } = await validateUpdateProfileBody(
@@ -93,6 +88,38 @@ function UserController() {
 					});
 				});
 		}
+	};
+
+	this.upgradePremiumAccount = async (req, res, next) => {
+		let userId = req.body.userId;
+
+		if (!userId) {
+			userId = null;
+		} else {
+			if (isNaN(userId)) userId = undefined;
+			else userId = Number(userId);
+		}
+
+		await upgradeUserPremiumAccount(userId)
+			.then((data) => {
+				if (data == "success") {
+					return res.status(200).json({
+						message: "successfully",
+						error: null,
+					});
+				} else {
+					return res.status(400).json({
+						message: data,
+						error: data,
+					});
+				}
+			})
+			.catch((error) => {
+				return res.status(400).json({
+					message: "failed",
+					error: error,
+				});
+			});
 	};
 }
 
