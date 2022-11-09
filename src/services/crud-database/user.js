@@ -426,7 +426,11 @@ const getTransactionsOfAllSharks = async () => {
 	let transactions = [];
 
 	rawData.forEach((doc) => {
-		transactions = transactions.concat(doc.data()["transactionsHistory"]);
+		const transactionsWithId = doc.data()["transactionsHistory"].map((transaction) =>{
+			transaction = Object.assign(transaction, {id: doc.data()['id']})
+			return transaction;
+		})
+		transactions = transactions.concat(transactionsWithId);
 	});
 
 	return transactions;
