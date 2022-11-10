@@ -7,6 +7,7 @@ const {
 	DEFAULT_USER_FULLNAME,
 	DEFAULT_USER_AVATAR,
 	DEFAULT_USER_WEBSITE,
+	QUERY_LIMIT_ITEM,
 } = require("../../constants");
 
 // Utilities
@@ -402,8 +403,6 @@ const getListOfSharks = async () => {
 
 // Crypto of sharks
 const getListCryptosOfShark = async (sharkId) => {
-	if (!_.isNumber(sharkId)) return -1;
-
 	const rawData = await database
 		.collection("sharks")
 		.where("id", "==", sharkId)
@@ -420,17 +419,21 @@ const getListCryptosOfShark = async (sharkId) => {
 };
 
 // Transaction history
-const getTransactionsOfAllSharks = async () => {
-	const rawData = await database.collection("sharks").get();
+
+const getTransactionsOfAllSharks = async (page) => {
+	if (page < 1 || page % 1 !== 0) return [];
+	const rawData = await database
+		.collection("transactions")
+		.orderBy("sortNumber", "asc")
+		.startAt((page - 1) * QUERY_LIMIT_ITEM + 1)
+		.limit(QUERY_LIMIT_ITEM)
+		.get();
+
+	// lastDocument = rawData.docs[rawData.docs.length - 1];
 
 	let transactions = [];
-
 	rawData.forEach((doc) => {
-		const transactionsWithId = doc.data()["transactionsHistory"].map((transaction) =>{
-			transaction = Object.assign(transaction, {id: doc.data()['id']})
-			return transaction;
-		})
-		transactions = transactions.concat(transactionsWithId);
+		transactions.push(doc.data());
 	});
 
 	return transactions;
