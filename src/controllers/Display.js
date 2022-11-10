@@ -294,7 +294,7 @@ function DisplayController() {
 		}
 		await getTransactionsOfAllSharks(page)
 			.then((datas) => {
-				if (!_.isObject(datas)) {
+				if (!_.isArray(datas)) {
 					return res.status(400).json({
 						message: "failed-listtransaction-not-exist",
 						error: "listtransaction-not-exist",
