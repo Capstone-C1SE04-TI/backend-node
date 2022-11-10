@@ -1,12 +1,6 @@
 const database = require("../../configs/connect-database");
 const firebase = require("firebase-admin");
-const {
-	randomFirestoreDocumentId,
-	comparePassword,
-	convertUnixTimestampToNumber,
-} = require("../../helpers");
-const { getUsersLength } = require("./admin");
-const { isEqual, result } = require("lodash");
+const { randomFirestoreDocumentId } = require("../../helpers");
 const _ = require("lodash");
 
 const {
@@ -15,8 +9,6 @@ const {
 	DEFAULT_USER_WEBSITE,
 	QUERY_LIMIT_ITEM,
 } = require("../../constants");
-const { async } = require("@firebase/util");
-const { raw } = require("express");
 
 // Utilities
 const getValueFromPromise = async (promiseValue) => {
@@ -32,13 +24,12 @@ const getHoursPriceOfToken = async (tokenSymbol) => {
 
 	let hoursPrice = {};
 	rawData.forEach((doc) => {
-		hoursPrice = doc.data()["originalPrices"]["hourly"];
+		hoursPrice = doc.data().originalPrices.hourly;
 	});
 
 	return hoursPrice;
 };
 
-// --------------------------------------
 const getUserByUsername = async (username) => {
 	let user;
 
@@ -68,6 +59,11 @@ const getUserByEmail = async (email) => {
 	});
 
 	return user;
+};
+
+const getUsersLength = async () => {
+	const users = await database.collection("users").get();
+	return users._size || 0;
 };
 
 const createNewUser = async ({
@@ -220,25 +216,24 @@ const getCoinsAndTokensLength = async () => {
 
 const getListReducingCoinsAndTokens = async () => {
 	let reducingCoinsAndTokens = [];
-	let rawData = [];
+	let rawData = await database.collection("tokens").get();
 
-	rawData = await database.collection("tokens").get();
-
-	// get data
 	rawData.forEach((doc) => {
+		const data = doc.data();
+
 		reducingCoinsAndTokens.push({
-			id: doc.data()["id"],
-			name: doc.data()["name"],
-			symbol: doc.data()["symbol"],
-			iconURL: doc.data()["iconURL"],
-			tagNames: doc.data()["tagNames"],
+			id: data.id,
+			name: data.name,
+			symbol: data.symbol,
+			iconURL: data.iconURL,
+			tagNames: data.tagNames,
 			usd: {
-				percentChange24h: doc.data()["usd"]["percentChange24h"],
-				price: doc.data()["usd"]["price"],
+				percentChange24h: data.usd.percentChange24h,
+				price: data.usd.price,
 			},
 			pricesLast1Day:
-				doc.data()["id"] >= 1 && doc.data()["id"] <= 10
-					? Object.entries(doc.data()["prices"]["day"])
+				data.id >= 1 && data.id <= 10
+					? Object.entries(data.prices.day)
 					: null,
 		});
 	});
@@ -246,8 +241,7 @@ const getListReducingCoinsAndTokens = async () => {
 	//sort asc
 	reducingCoinsAndTokens.sort(
 		(firstObj, secondObj) =>
-			firstObj["usd"]["percentChange24h"] -
-			secondObj["usd"]["percentChange24h"],
+			firstObj.usd.percentChange24h - secondObj.usd.percentChange24h,
 	);
 
 	// get first 10 tokens
@@ -258,37 +252,31 @@ const getListReducingCoinsAndTokens = async () => {
 
 const getListTrendingCoins = async () => {
 	let trendingCoins = [];
-	let rawData = [];
-
-	rawData = await database
+	let rawData = await database
 		.collection("tokens")
 		.where("type", "==", "coin")
 		.get();
 
 	// get data
 	rawData.forEach((doc) => {
+		const data = doc.data();
+
 		trendingCoins.push({
-			id: doc.data()["id"],
-			name: doc.data()["name"],
-			symbol: doc.data()["symbol"],
-			iconURL: doc.data()["iconURL"],
-			tagNames: doc.data()["tagNames"],
-			circulatingSupply: doc.data()["circulatingSupply"],
-			marketCap: doc.data()["marketCap"],
-			usd: {
-				percentChange24h: doc.data()["usd"]["percentChange24h"],
-				percentChange7d: doc.data()["usd"]["percentChange7d"],
-				volume24h: doc.data()["usd"]["volume24h"],
-				price: doc.data()["usd"]["price"],
-			},
+			id: data.id,
+			name: data.name,
+			symbol: data.symbol,
+			iconURL: data.iconURL,
+			tagNames: data.tagNames,
+			circulatingSupply: data.circulatingSupply,
+			marketCap: data.marketCap,
+			usd: data.usd,
 		});
 	});
 
 	// sort desc
 	trendingCoins.sort(
 		(firstObj, secondObj) =>
-			secondObj["usd"]["percentChange24h"] -
-			firstObj["usd"]["percentChange24h"],
+			secondObj.usd.percentChange24h - firstObj.usd.percentChange24h,
 	);
 
 	// get first 10 coins
@@ -299,37 +287,31 @@ const getListTrendingCoins = async () => {
 
 const getListTrendingTokens = async () => {
 	let trendingTokens = [];
-	let rawData = [];
-
-	rawData = await database
+	let rawData = await database
 		.collection("tokens")
 		.where("type", "==", "token")
 		.get();
 
 	// get data
 	rawData.forEach((doc) => {
+		const data = doc.data();
+
 		trendingTokens.push({
-			id: doc.data()["id"],
-			name: doc.data()["name"],
-			symbol: doc.data()["symbol"],
-			iconURL: doc.data()["iconURL"],
-			tagNames: doc.data()["tagNames"],
-			circulatingSupply: doc.data()["circulatingSupply"],
-			marketCap: doc.data()["marketCap"],
-			usd: {
-				percentChange24h: doc.data()["usd"]["percentChange24h"],
-				percentChange7d: doc.data()["usd"]["percentChange7d"],
-				volume24h: doc.data()["usd"]["volume24h"],
-				price: doc.data()["usd"]["price"],
-			},
+			id: data.id,
+			name: data.name,
+			symbol: data.symbol,
+			iconURL: data.iconURL,
+			tagNames: data.tagNames,
+			circulatingSupply: data.circulatingSupply,
+			marketCap: data.marketCap,
+			usd: data.usd,
 		});
 	});
 
 	// sort desc
 	trendingTokens.sort(
 		(firstObj, secondObj) =>
-			secondObj["usd"]["percentChange24h"] -
-			firstObj["usd"]["percentChange24h"],
+			secondObj.usd.percentChange24h - firstObj.usd.percentChange24h,
 	);
 
 	// get first 10 tokens
@@ -387,7 +369,6 @@ const getCoinOrTokenDetails = async (coinSymbol) => {
 
 const getListOfTags = async () => {
 	let tagsList = [];
-
 	const tags = await database.collection("tags").orderBy("id", "asc").get();
 
 	tags.forEach((doc) => {
@@ -421,14 +402,13 @@ const getListOfSharks = async () => {
 };
 
 // Crypto of sharks
-
 const getListCryptosOfShark = async (sharkId) => {
 	const rawData = await database
 		.collection("sharks")
 		.where("id", "==", sharkId)
 		.get();
-	//have data
 
+	//have data
 	let cryptos = [];
 
 	rawData.forEach((doc) => {
@@ -515,6 +495,7 @@ const getDetailCoinTransactionHistoryOfShark = async (sharkId, coinSymbol) => {
 module.exports = {
 	getUserByUsername,
 	getUserByEmail,
+	getUsersLength,
 	createNewUser,
 	updateUserConfirmationCode,
 	updateUserPassword,
