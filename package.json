@@ -1,7 +1,7 @@
 {
 	"name": "backend-node",
 	"version": "1.0.0",
-	"description": "Capstone Project 1 - Source Backend (Node)",
+	"description": "Capstone Project 1 - Source Backend (NodeJS)",
 	"main": "src/index.js",
 	"scripts": {
 		"start": "nodemon src/index.js",
