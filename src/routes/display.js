@@ -118,6 +118,11 @@ router.get("/sharks", displayController.getSharks);
  *   get:
  *     description: Get list transactions history of all sharks
  *     tags: [Shark]
+ *     parameters:
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: string
  *     responses:
  *       200:
  *         description: Get list transactions history of all sharks successfully

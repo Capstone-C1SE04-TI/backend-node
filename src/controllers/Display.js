@@ -281,21 +281,32 @@ function DisplayController() {
 	};
 
 	this.getListTransactionsOfAllSharks = async (req, res, next) => {
-		await getTransactionsOfAllSharks()
+		let page = req.query.page;
+		if (!page) {
+			page = null;
+		} else {
+			const numberCheck = _.toNumber(page);
+			if (_.isNaN(numberCheck)) {
+				page = undefined;
+			} else {
+				page = numberCheck;
+			}
+		}
+		await getTransactionsOfAllSharks(page)
 			.then((datas) => {
 				if (!_.isArray(datas)) {
 					return res.status(400).json({
 						message: "failed-listtransaction-not-exist",
 						error: "listtransaction-not-exist",
-						datas: [],
 						datasLength: 0,
+						datas: [],
 					});
 				} else {
 					return res.status(200).json({
 						message: "successfully",
 						error: null,
-						datas: datas,
 						datasLength: datas.length,
+						datas: datas,
 					});
 				}
 			})
@@ -303,8 +314,8 @@ function DisplayController() {
 				return res.status(400).json({
 					message: "failed",
 					error: error,
-					datas: [],
 					datasLength: 0,
+					datas: [],
 				});
 			});
 	};
