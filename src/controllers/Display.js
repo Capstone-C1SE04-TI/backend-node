@@ -336,8 +336,8 @@ function DisplayController() {
 					return res.status(200).json({
 						message: "successfully",
 						error: null,
-						datas: Object.entries(data.data),
-						datasLength: Object.entries(data.data).length,
+						datas: data.data,
+						datasLength: data.data.length,
 					});
 				} else {
 					return res.status(400).json({
