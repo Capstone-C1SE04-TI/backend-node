@@ -165,7 +165,6 @@ router.post(
  *       400:
  *         description: Follow shark wallet failed
  */
-// router.post("/follow-shark-wallet", isAuth, userController.followSharkWallet);
-router.post("/follow-shark-wallet", userController.followSharkWallet);
+router.post("/follow-shark-wallet", isAuth, userController.followSharkWallet);
 
 module.exports = router;
