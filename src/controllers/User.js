@@ -80,7 +80,7 @@ function UserController() {
 
 			await updateUserProfile(userId, updateInfo)
 				.then((data) => {
-					if (data == "success") {
+					if (data === "success") {
 						return res.status(200).json({
 							message: "successfully",
 							error: null,
@@ -171,7 +171,7 @@ function UserController() {
 
 		await upgradeUserPremiumAccount(userId)
 			.then((data) => {
-				if (data == "success") {
+				if (data === "success") {
 					return res.status(200).json({
 						message: "successfully",
 						error: null,
@@ -208,7 +208,7 @@ function UserController() {
 
 		await followWalletOfShark(userId, sharkId)
 			.then((data) => {
-				if (data == "success") {
+				if (data === "success") {
 					return res.status(200).json({
 						message: "successfully",
 						error: null,
