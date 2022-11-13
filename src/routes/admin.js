@@ -5,12 +5,6 @@ const { isAdmin } = require("../middlewares/authentication");
 
 /**
  * @swagger
- * tags:
- *   name: Admin
- */
-
-/**
- * @swagger
  * /admin/signin:
  *   post:
  *     description: Sign In

@@ -30,7 +30,6 @@ const swaggerOptions = {
 	apis: [
 		"src/routes/auth.js",
 		"src/routes/forgotPassword.js",
-		"src/routes/changePassword.js",
 		"src/routes/coinDetails.js",
 		"src/routes/display.js",
 		"src/routes/user.js",

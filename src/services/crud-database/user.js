@@ -89,6 +89,7 @@ const createNewUser = async ({
 		avatar: DEFAULT_USER_AVATAR,
 		website: DEFAULT_USER_WEBSITE,
 		premiumAccount: false,
+		sharkFollowed: [],
 		createdDate: currentTimestamp,
 		updatedDate: currentTimestamp,
 	};

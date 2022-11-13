@@ -4,12 +4,6 @@ const forgotPasswordController = require("../controllers/ForgotPassword");
 
 /**
  * @swagger
- * tags:
- *   name: Forgot Password
- */
-
-/**
- * @swagger
  * /forgot-password/submit-email:
  *   post:
  *     description: Submit Email

@@ -4,24 +4,6 @@ const displayController = require("../controllers/Display");
 
 /**
  * @swagger
- * tags:
- *   name: Display
- */
-
-/**
- * @swagger
- * tags:
- *   name: Coin - Token
- */
-
-/**
- * @swagger
- * tags:
- *   name: Shark
- */
-
-/**
- * @swagger
  * /display/coins-and-tokens/reducing:
  *   get:
  *     description: Get top 10 reducing coins and tokens
@@ -129,7 +111,7 @@ router.get("/sharks", displayController.getSharks);
  *       400:
  *         description: Get list transactions history of all sharks failed
  */
- router.get(
+router.get(
 	"/sharks/transaction-history",
 	displayController.getListTransactionsOfAllSharks,
 );
@@ -206,7 +188,7 @@ router.get(
  * /display/tags:
  *   get:
  *     description: Get list of tags
- *     tags: [Display]
+ *     tags: [Others]
  *     responses:
  *       200:
  *         description: Get list of tags successfully

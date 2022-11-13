@@ -5,12 +5,6 @@ const { isAuth } = require("../middlewares/authentication");
 
 /**
  * @swagger
- * tags:
- *   name: User
- */
-
-/**
- * @swagger
  * /user/profile/update:
  *   post:
  *     description: Update user profile
@@ -77,6 +71,44 @@ router.get("/profile", isAuth, userController.getUserProfile);
 
 /**
  * @swagger
+ * /user/change-password:
+ *   post:
+ *     description: Change Password
+ *     tags: [User]
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - oldPassword
+ *               - newPassword
+ *               - newConfirmPassword
+ *             properties:
+ *               email:
+ *                  type: string
+ *               oldPassword:
+ *                  type: string
+ *               newPassword:
+ *                  type: string
+ *               newConfirmPassword:
+ *                  type: string
+ *             example:
+ *               email: "hieuhn@gmail.com"
+ *               oldPassword: "12345678"
+ *               newPassword: "12345678910"
+ *               newConfirmPassword: "12345678910"
+ *     responses:
+ *       200:
+ *         description: Change password successfully
+ *       400:
+ *         description: Change password failed
+ */
+router.post("/", isAuth, userController.changePassword);
+
+/**
+ * @swagger
  * /user/upgrade-premium-account:
  *   post:
  *     description: Upgrade premium account
@@ -104,5 +136,36 @@ router.post(
 	isAuth,
 	userController.upgradePremiumAccount,
 );
+
+/**
+ * @swagger
+ * /user/follow-shark-wallet:
+ *   post:
+ *     description: Follow shark wallet
+ *     tags: [User]
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userId
+ *               - sharkId
+ *             properties:
+ *               userId:
+ *                  type: string
+ *               sharkId:
+ *                  type: string
+ *             example:
+ *               userId: "1"
+ *               sharkId: "1"
+ *     responses:
+ *       200:
+ *         description: Follow shark wallet successfully
+ *       400:
+ *         description: Follow shark wallet failed
+ */
+// router.post("/follow-shark-wallet", isAuth, userController.followSharkWallet);
+router.post("/follow-shark-wallet", userController.followSharkWallet);
 
 module.exports = router;
