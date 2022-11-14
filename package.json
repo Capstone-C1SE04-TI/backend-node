@@ -1,7 +1,7 @@
 {
 	"name": "backend-node",
 	"version": "1.0.0",
-	"description": "Capstone Project 1 - Source Backend (NodeJS)",
+	"description": "Capstone Project 1 - Source Backend (NodeJS - Firebase)",
 	"main": "src/index.js",
 	"scripts": {
 		"start": "nodemon src/index.js",
@@ -10,9 +10,10 @@
 	"keywords": [
 		"backend",
 		"backend-node",
-		"capstone-project"
+		"backend-node-firebase",
+		"capstone1-project"
 	],
-	"author": "hdttuan",
+	"author": "huynhducthanhtuan huynhngochieu",
 	"license": "MIT",
 	"homepage": "https://github.com/Capstone-C1SE04-TI/backend-node#readme",
 	"dependencies": {
