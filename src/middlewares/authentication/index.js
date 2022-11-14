@@ -3,12 +3,6 @@ const { isAuthed } = require("../../services/authentication");
 const dotenv = require("dotenv");
 dotenv.config();
 
-// const requireSignIn = expressjwt({
-// 	secret: process.env.ACCESS_TOKEN_SECRET,
-// 	algorithms: ["HS256"],
-// 	userProperty: "auth",
-// });
-
 const isAuth = async (req, res, next) => {
 	try {
 		if (!(await isAuthed(req, res, next))) {

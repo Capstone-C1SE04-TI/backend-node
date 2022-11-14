@@ -1,15 +1,6 @@
 const database = require("../../configs/connect-database");
 const firebase = require("firebase-admin");
-
-const checkExistedUserId = async (userId) => {
-	const users = await database
-		.collection("users")
-		.where("userId", "==", userId)
-		.get();
-
-	// users._size = 1: existed
-	return users._size === 1;
-};
+const { checkExistedUserId, checkExistedSharkId } = require("./user");
 
 const getListOfUsers = async () => {
 	let usersList = [];
@@ -27,6 +18,7 @@ const getListOfUsers = async () => {
 			fullName: data.fullName,
 			avatar: data.avatar,
 			website: data.website,
+			sharksFollowed: data.sharksFollowed,
 			updatedDate: data.updatedDate,
 			createdDate: data.createdDate,
 		};
@@ -59,6 +51,7 @@ const getUserProfile = async (userId) => {
 				fullName: data.fullName,
 				avatar: data.avatar,
 				website: data.website,
+				sharksFollowed: data.sharksFollowed,
 				updatedDate: data.updatedDate,
 				createdDate: data.createdDate,
 			};
@@ -162,6 +155,51 @@ const upgradeUserPremiumAccount = async (userId) => {
 	}
 };
 
+const followWalletOfShark = async (userId, sharkId) => {
+	try {
+		if (userId === null) return "userid-required";
+		if (userId === undefined) return "userid-invalid";
+
+		if (sharkId === null) return "sharkid-required";
+		if (sharkId === undefined) return "sharkid-invalid";
+
+		if (!(await checkExistedUserId(userId))) return "user-notfound";
+		if (!(await checkExistedSharkId(sharkId))) return "shark-notfound";
+
+		const users = await database
+			.collection("users")
+			.where("userId", "==", userId)
+			.get();
+
+		const sharks = await database
+			.collection("sharks")
+			.where("id", "==", sharkId)
+			.get();
+
+		let sharkInfo = {};
+		sharks.forEach((doc) => {
+			const data = doc.data();
+
+			sharkInfo = {
+				id: data.id,
+				walletAddress: data.walletAddress,
+				totalAssets: data.totalAssets,
+				percent24h: data.percent24h,
+			};
+		});
+
+		users.forEach((doc) => {
+			doc.ref.update({
+				sharksFollowed: [...doc.data().sharksFollowed, sharkInfo],
+			});
+		});
+
+		return "success";
+	} catch (error) {
+		return "error";
+	}
+};
+
 const checkExistedUsername = async (username) => {
 	const admins = await database
 		.collection("admins")
@@ -226,6 +264,7 @@ module.exports = {
 	checkExistedEmailForUpdateProfile,
 	updateUserProfile,
 	upgradeUserPremiumAccount,
+	followWalletOfShark,
 	getPasswordByUsername,
 	getAdminByUsername,
 	deleteUserById,

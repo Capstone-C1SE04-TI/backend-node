@@ -1,13 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const adminController = require("../controllers/Admin");
+const AdminController = require("../controllers/Admin");
 const { isAdmin } = require("../middlewares/authentication");
-
-/**
- * @swagger
- * tags:
- *   name: Admin
- */
 
 /**
  * @swagger
@@ -37,7 +31,7 @@ const { isAdmin } = require("../middlewares/authentication");
  *       400:
  *         description: Sign in failed
  */
-router.post("/signin", adminController.signin);
+router.post("/signin", AdminController.signin);
 
 /**
  * @swagger
@@ -51,7 +45,7 @@ router.post("/signin", adminController.signin);
  *       400:
  *         description: Sign out failed
  */
-router.post("/signout", adminController.signout);
+router.post("/signout", AdminController.signout);
 
 /**
  * @swagger
@@ -77,7 +71,8 @@ router.post("/signout", adminController.signout);
  *       400:
  *         description: Delete user failed
  */
-router.post("/delete-user", adminController.deleteUser);
+router.post("/delete-user", AdminController.deleteUser);
+// router.post("/delete-user", isAdmin, AdminController.deleteUser);
 
 /**
  * @swagger
@@ -91,7 +86,8 @@ router.post("/delete-user", adminController.deleteUser);
  *       400:
  *         description: Get list of users failed
  */
-router.get("/user/list", adminController.getUsersList);
+router.get("/user/list", AdminController.getUsersList);
+// router.get("/user/list", isAdmin, AdminController.getUsersList);
 
 /**
  * @swagger
@@ -110,6 +106,7 @@ router.get("/user/list", adminController.getUsersList);
  *       400:
  *         description: Get detail user failed
  */
-router.get("/user/details", adminController.getUserDetail);
+router.get("/user/details", AdminController.getUserDetail);
+// router.get("/user/details", isAdmin, AdminController.getUserDetail);
 
 module.exports = router;

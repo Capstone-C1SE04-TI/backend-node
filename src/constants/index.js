@@ -1,4 +1,4 @@
-const QUERY_LIMIT_ITEM = 10;
+const QUERY_LIMIT_ITEM = 20;
 
 const DEFAULT_USER_FULLNAME = "";
 const DEFAULT_USER_WEBSITE = "";
