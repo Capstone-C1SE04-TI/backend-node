@@ -1,12 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const forgotPasswordController = require("../controllers/ForgotPassword");
-
-/**
- * @swagger
- * tags:
- *   name: Forgot Password
- */
+const ForgotPasswordController = require("../controllers/ForgotPassword");
 
 /**
  * @swagger
@@ -34,7 +28,7 @@ const forgotPasswordController = require("../controllers/ForgotPassword");
  *       404:
  *         description: Not found
  */
-router.post("/submit-email", forgotPasswordController.submitEmail);
+router.post("/submit-email", ForgotPasswordController.submitEmail);
 
 /**
  * @swagger
@@ -64,7 +58,7 @@ router.post("/submit-email", forgotPasswordController.submitEmail);
  *       400:
  *         description: Submit code failed
  */
-router.post("/submit-code", forgotPasswordController.submitCode);
+router.post("/submit-code", ForgotPasswordController.submitCode);
 
 /**
  * @swagger
@@ -90,7 +84,7 @@ router.post("/submit-code", forgotPasswordController.submitCode);
  *       400:
  *         description: Resend code failed
  */
-router.post("/resend-code", forgotPasswordController.submitEmail);
+router.post("/resend-code", ForgotPasswordController.submitEmail);
 
 /**
  * @swagger
@@ -124,6 +118,6 @@ router.post("/resend-code", forgotPasswordController.submitEmail);
  *       400:
  *         description: Create new password failed
  */
-router.post("/create-new-password", forgotPasswordController.createNewPassword);
+router.post("/create-new-password", ForgotPasswordController.createNewPassword);
 
 module.exports = router;

@@ -1,13 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const userController = require("../controllers/User");
+const UserController = require("../controllers/User");
 const { isAuth } = require("../middlewares/authentication");
-
-/**
- * @swagger
- * tags:
- *   name: User
- */
 
 /**
  * @swagger
@@ -76,5 +70,103 @@ router.post("/profile/update", userController.updateUserProfile);
  */
 // router.get("/profile", isAuth, userController.getUserProfile);
 router.get("/profile", userController.getUserProfile);
+
+/**
+ * @swagger
+ * /user/change-password:
+ *   post:
+ *     description: Change Password
+ *     tags: [User]
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - oldPassword
+ *               - newPassword
+ *               - newConfirmPassword
+ *             properties:
+ *               email:
+ *                  type: string
+ *               oldPassword:
+ *                  type: string
+ *               newPassword:
+ *                  type: string
+ *               newConfirmPassword:
+ *                  type: string
+ *             example:
+ *               email: "hieuhn@gmail.com"
+ *               oldPassword: "12345678"
+ *               newPassword: "12345678910"
+ *               newConfirmPassword: "12345678910"
+ *     responses:
+ *       200:
+ *         description: Change password successfully
+ *       400:
+ *         description: Change password failed
+ */
+router.post("/change-password", isAuth, UserController.changePassword);
+
+/**
+ * @swagger
+ * /user/upgrade-premium-account:
+ *   post:
+ *     description: Upgrade premium account
+ *     tags: [User]
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userId
+ *             properties:
+ *               userId:
+ *                  type: string
+ *             example:
+ *               userId: "1"
+ *     responses:
+ *       200:
+ *         description: Upgrade premium account successfully
+ *       400:
+ *         description: Upgrade premium account failed
+ */
+router.post(
+	"/upgrade-premium-account",
+	isAuth,
+	UserController.upgradePremiumAccount,
+);
+
+/**
+ * @swagger
+ * /user/follow-shark-wallet:
+ *   post:
+ *     description: Follow shark wallet
+ *     tags: [User]
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userId
+ *               - sharkId
+ *             properties:
+ *               userId:
+ *                  type: string
+ *               sharkId:
+ *                  type: string
+ *             example:
+ *               userId: "1"
+ *               sharkId: "1"
+ *     responses:
+ *       200:
+ *         description: Follow shark wallet successfully
+ *       400:
+ *         description: Follow shark wallet failed
+ */
+router.post("/follow-shark-wallet", isAuth, UserController.followSharkWallet);
 
 module.exports = router;

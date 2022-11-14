@@ -1,12 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const authController = require("../controllers/Auth");
-
-/**
- * @swagger
- * tags:
- *   name: Authentication
- */
+const AuthController = require("../controllers/Auth");
 
 /**
  * @swagger
@@ -48,7 +42,7 @@ const authController = require("../controllers/Auth");
  *       400:
  *         description: Sign up failed
  */
-router.post("/signup", authController.signup);
+router.post("/signup", AuthController.signup);
 
 /**
  * @swagger
@@ -80,7 +74,7 @@ router.post("/signup", authController.signup);
  *       404:
  *         description: Not found
  */
-router.post("/signin", authController.signin);
+router.post("/signin", AuthController.signin);
 
 /**
  * @swagger
@@ -94,6 +88,6 @@ router.post("/signin", authController.signin);
  *       400:
  *         description: Sign out failed
  */
-router.post("/signout", authController.signout);
+router.post("/signout", AuthController.signout);
 
 module.exports = router;
